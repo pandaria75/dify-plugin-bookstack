@@ -39,6 +39,10 @@ class InvalidResponseError(BookStackError):
     pass
 
 
+def _invalid_credentials() -> InvalidCredentialsError:
+    return InvalidCredentialsError("Invalid credentials")
+
+
 @dataclass(slots=True)
 class BookStackClient:
     base_url: str
@@ -49,17 +53,63 @@ class BookStackClient:
 
     @classmethod
     def from_credentials(cls, credentials: dict[str, Any]) -> "BookStackClient":
-        verify_ssl = credentials.get("verify_ssl", True)
-        if isinstance(verify_ssl, str):
-            verify_ssl = verify_ssl.lower() not in {"false", "0"}
+        base_url = cls._require_credential(credentials, "base_url")
+        token_id = cls._require_credential(credentials, "token_id")
+        token_secret = cls._require_credential(credentials, "token_secret")
 
         return cls(
-            base_url=str(credentials["base_url"]),
-            token_id=str(credentials["token_id"]),
-            token_secret=str(credentials["token_secret"]),
-            timeout_seconds=float(credentials.get("timeout_seconds") or 10),
-            verify_ssl=bool(verify_ssl),
+            base_url=base_url,
+            token_id=token_id,
+            token_secret=token_secret,
+            timeout_seconds=cls._parse_timeout(credentials.get("timeout_seconds")),
+            verify_ssl=cls._parse_verify_ssl(credentials.get("verify_ssl", True)),
         )
+
+    @staticmethod
+    def _require_credential(credentials: dict[str, Any], key: str) -> str:
+        value = credentials.get(key)
+        if value is None:
+            raise _invalid_credentials()
+
+        text = str(value).strip()
+        if not text:
+            raise _invalid_credentials()
+
+        return text
+
+    @staticmethod
+    def _parse_timeout(value: Any) -> float:
+        if value in {None, ""}:
+            return 10.0
+
+        try:
+            timeout = float(value)
+        except (TypeError, ValueError) as exc:
+            raise _invalid_credentials() from exc
+
+        if timeout <= 0:
+            raise _invalid_credentials()
+
+        return timeout
+
+    @staticmethod
+    def _parse_verify_ssl(value: Any) -> bool:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"true", "1"}:
+                return True
+            if normalized in {"false", "0"}:
+                return False
+            raise _invalid_credentials()
+        if isinstance(value, (int, float)):
+            if value == 1:
+                return True
+            if value == 0:
+                return False
+            raise _invalid_credentials()
+        raise _invalid_credentials()
 
     def _api_url(self, path: str) -> str:
         normalized = self.base_url.rstrip("/") + "/"
@@ -70,7 +120,15 @@ class BookStackClient:
         session.headers.update({"Authorization": f"Token {self.token_id}:{self.token_secret}"})
         return session
 
-    def _request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
+    def _request(
+        self,
+        method: str,
+        path: str,
+        *,
+        not_found_error: type[BookStackError] = BookNotFoundError,
+        not_found_message: str = "Resource not found",
+        **kwargs: Any,
+    ) -> dict[str, Any]:
         try:
             response = self._session().request(
                 method=method,
@@ -87,7 +145,7 @@ class BookStackClient:
                 raise InvalidCredentialsError("Invalid credentials")
             raise PermissionDeniedError("Permission denied")
         if response.status_code == 404:
-            raise BookNotFoundError("Resource not found")
+            raise not_found_error(not_found_message)
         if response.status_code >= 500:
             raise ServiceUnavailableError("BookStack API unavailable")
 

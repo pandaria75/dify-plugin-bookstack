@@ -1,0 +1,120 @@
+from __future__ import annotations
+
+import unittest
+from unittest.mock import Mock, patch
+
+from bookstack_client import (
+    BookNotFoundError,
+    BookStackClient,
+    InvalidCredentialsError,
+    InvalidResponseError,
+    PermissionDeniedError,
+    ServiceUnavailableError,
+)
+
+
+class FakeResponse:
+    def __init__(self, status_code: int, *, content: bytes = b"{}", json_value=None, json_error: Exception | None = None):
+        self.status_code = status_code
+        self.content = content
+        self._json_value = json_value
+        self._json_error = json_error
+
+    def json(self):
+        if self._json_error is not None:
+            raise self._json_error
+        return self._json_value
+
+
+class FakeSession:
+    def __init__(self, response: FakeResponse):
+        self.headers = {}
+        self._response = response
+        self.request = Mock(return_value=response)
+
+
+class BookStackClientTestCase(unittest.TestCase):
+    def test_from_credentials_parses_timeout_and_ssl(self):
+        client = BookStackClient.from_credentials(
+            {
+                "base_url": "https://example.test/",
+                "token_id": "id",
+                "token_secret": "secret",
+                "timeout_seconds": "12.5",
+                "verify_ssl": "false",
+            }
+        )
+
+        self.assertEqual(client.base_url, "https://example.test/")
+        self.assertEqual(client.token_id, "id")
+        self.assertEqual(client.token_secret, "secret")
+        self.assertEqual(client.timeout_seconds, 12.5)
+        self.assertFalse(client.verify_ssl)
+
+    def test_from_credentials_rejects_missing_required_fields(self):
+        with self.assertRaisesRegex(InvalidCredentialsError, "Invalid credentials"):
+            BookStackClient.from_credentials({"token_id": "id", "token_secret": "secret"})
+
+    def test_request_normalizes_url_and_sets_auth_header(self):
+        response = FakeResponse(200, content=b'{"ok": true}', json_value={"ok": True})
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret", timeout_seconds=7.0, verify_ssl=False)
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            payload = client._request("GET", "system")
+
+        self.assertEqual(payload, {"ok": True})
+        self.assertEqual(fake_session.headers["Authorization"], "Token id:secret")
+        fake_session.request.assert_called_once_with(
+            method="GET",
+            url="https://example.test/api/system",
+            timeout=7.0,
+            verify=False,
+        )
+
+    def test_request_404_uses_neutral_default_message(self):
+        response = FakeResponse(404, content=b"{}")
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            with self.assertRaisesRegex(BookNotFoundError, "Resource not found"):
+                client._request("GET", "system")
+
+    def test_request_404_honors_explicit_not_found_override(self):
+        response = FakeResponse(404, content=b"{}")
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            with self.assertRaisesRegex(BookNotFoundError, "Book not found"):
+                client._request("GET", "books/1", not_found_message="Book not found")
+
+    def test_request_maps_common_errors(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        cases = [
+            (401, InvalidCredentialsError, "Invalid credentials"),
+            (403, PermissionDeniedError, "Permission denied"),
+            (500, ServiceUnavailableError, "BookStack API unavailable"),
+        ]
+
+        for status_code, error_type, message in cases:
+            with self.subTest(status_code=status_code):
+                fake_session = FakeSession(FakeResponse(status_code, content=b"{}"))
+                with patch("bookstack_client.requests.Session", return_value=fake_session):
+                    with self.assertRaisesRegex(error_type, message):
+                        client._request("GET", "system")
+
+    def test_request_rejects_invalid_json(self):
+        response = FakeResponse(200, content=b"not-json", json_error=ValueError("bad json"))
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            with self.assertRaisesRegex(InvalidResponseError, "Invalid BookStack response"):
+                client._request("GET", "system")
+
+
+if __name__ == "__main__":
+    unittest.main()
