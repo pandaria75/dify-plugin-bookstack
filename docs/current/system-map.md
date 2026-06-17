@@ -60,7 +60,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 
 - Fact:
   - Credentials are configured through the Dify provider schema and should not be hardcoded in code, docs examples, or tests.
-  - Python source references in plugin YAML use absolute repo paths such as `/provider/bookstack.py` and `/tools/validate_credentials.py`.
+  - Python source references and plugin YAML references use repository-relative paths such as `provider/bookstack.py`, `tools/validate_credentials.py`, `provider/bookstack.yaml`, and `tools/validate_credentials.yaml`, matching `dify_plugin` 0.9.x local loader behavior.
   - `_assets/icon.svg` is the plugin icon path from `manifest.yaml`.
   - Current functionality must not describe planned Phase 1 tools as available.
   - `BookStackClient` is the shared integration seam for BookStack API requests and error mapping.

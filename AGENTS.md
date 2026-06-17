@@ -333,7 +333,7 @@ Project-specific instructions are maintained in the imported block below.
 ## Dify Plugin Rules
 
 - Use the current Dify plugin layout in this repo: `manifest.yaml`, `provider/bookstack.yaml`, `provider/bookstack.py`, `tools/*.yaml`, `tools/*.py`, `_assets/`.
-- Use absolute repo paths for Python source references in plugin YAML files.
+- Use repository-relative paths for plugin YAML references and `extra.python.source` values, such as `provider/bookstack.yaml`, `tools/validate_credentials.yaml`, `provider/bookstack.py`, and `tools/validate_credentials.py`; `dify_plugin` 0.9.x loads these paths from the plugin source directory.
 - Use `_assets/icon.svg` in `manifest.yaml`; keep provider YAML icon references aligned with the current Dify provider schema, such as `icon.svg` in `provider/bookstack.yaml`.
 - Keep credentials in Dify provider schema only: `base_url`, `token_id`, `token_secret`, plus optional defaults.
 - Do not hardcode BookStack URLs, tokens, or secrets in code, docs examples, or tests.

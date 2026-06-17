@@ -63,7 +63,7 @@ credentials_for_provider:
       en_US: Verify SSL
       zh_Hans: 验证 SSL
 tools:
-  - /tools/validate_credentials.yaml
+  - tools/validate_credentials.yaml
 extra:
   python:
-    source: /provider/bookstack.py
+    source: provider/bookstack.py
