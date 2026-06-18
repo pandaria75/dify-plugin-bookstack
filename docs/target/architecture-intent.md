@@ -7,7 +7,7 @@ This is not evidence of how the project works today. Keep current-state facts in
 ## Scope
 
 - Area or workflow: BookStack Tool plugin first, Datasource plugin later.
-- Why a target-state document is needed: keep planned capability separate from the current skeleton and credential-validation implementation.
+- Why a target-state document is needed: keep planned capability separate from the current implemented Tool plugin scope.
 - Status: approved direction for roadmap planning; implementation is incremental.
 - Related current docs: `docs/current/system-map.md`, `docs/ARCHITECTURE.md`, `docs/API_MAPPING.md`, `docs/ROADMAP.md`.
 
@@ -34,7 +34,7 @@ This is not evidence of how the project works today. Keep current-state facts in
 ## Differences From Current State
 
 - Current fact:
-  - The repository currently has the plugin skeleton, provider credential schema, provider validation, shared `BookStackClient`, and `validate_credentials`.
+  - The repository currently has the plugin skeleton, provider credential schema, provider validation, shared `BookStackClient`, `validate_credentials`, `search_pages`, `get_page`, `create_page`, `update_page`, and `publish_page`.
 - Target:
   - The Tool plugin should support the planned Phase 1 BookStack operations, then later add Datasource behavior.
 - Migration note:

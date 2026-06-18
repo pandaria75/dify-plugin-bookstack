@@ -115,6 +115,43 @@ class BookStackClientTestCase(unittest.TestCase):
             with self.assertRaisesRegex(InvalidResponseError, "Invalid BookStack response"):
                 client._request("GET", "system")
 
+    def test_build_page_payload_maps_supported_fields(self):
+        payload = BookStackClient._build_page_payload(
+            title="Ops Runbook",
+            markdown="# Runbook",
+            tags=["ops", "runbook"],
+            book_id="7",
+            chapter_id="11",
+        )
+
+        self.assertEqual(
+            payload,
+            {
+                "name": "Ops Runbook",
+                "markdown": "# Runbook",
+                "tags": ["ops", "runbook"],
+                "book_id": "7",
+                "chapter_id": "11",
+            },
+        )
+
+    def test_build_page_payload_omits_none_fields(self):
+        payload = BookStackClient._build_page_payload(
+            title="Ops Runbook",
+            markdown=None,
+            tags=None,
+            book_id="7",
+            chapter_id=None,
+        )
+
+        self.assertEqual(
+            payload,
+            {
+                "name": "Ops Runbook",
+                "book_id": "7",
+            },
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

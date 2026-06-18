@@ -4,7 +4,7 @@ from typing import Any
 
 
 def normalize_tags(value: Any) -> list[str] | None:
-    if value in {None, ""}:
+    if value is None or value == "":
         return None
     if isinstance(value, str):
         text = value.strip()

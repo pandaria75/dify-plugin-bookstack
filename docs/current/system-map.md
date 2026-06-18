@@ -17,7 +17,7 @@ It must not become a code index. List only the files, entrypoints, and flows nee
 
 - Facts confirmed: the repository is an active Dify Tool plugin MVP; provider credential validation and the implemented Phase 1 tools use the shared BookStack HTTP client.
 - Inferences needing confirmation: Dify runtime behavior for packaging and invocation should be checked against a real Dify plugin runtime before release.
-- Unknowns or missing evidence: there is no automated test suite or CI entrypoint in the repository yet.
+- Unknowns or missing evidence: there is no CI entrypoint in the repository yet, and no live Dify package smoke test evidence has been captured here.
 
 ## Entrypoints
 
@@ -51,13 +51,18 @@ Keep this selective. Include only the files or directories that matter for under
   - `manifest.yaml` - plugin metadata and provider registration.
   - `provider/bookstack.yaml` - provider credentials and tool registration contract.
   - `provider/bookstack.py` - provider credential validation entrypoint.
-  - `tools/validate_credentials.yaml` and `tools/validate_credentials.py` - only implemented tool contract and source.
+  - `tools/validate_credentials.yaml` and `tools/validate_credentials.py` - credential validation tool contract and source.
+  - `tools/search_pages.yaml` and `tools/search_pages.py` - page search tool contract and source.
+  - `tools/get_page.yaml` and `tools/get_page.py` - page read tool contract and source.
+  - `tools/create_page.yaml` and `tools/create_page.py` - page creation tool contract and source.
+  - `tools/update_page.yaml` and `tools/update_page.py` - page update tool contract and source.
+  - `tools/publish_page.yaml` and `tools/publish_page.py` - create-or-update publish tool contract and source.
   - `bookstack_client.py` - shared BookStack HTTP wrapper and error mapping.
   - `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, and `docs/ISSUES.md` - implementation order and current planned-vs-implemented boundary.
 - Inference:
   - `docs/research-notes.md` should remain the place for version-sensitive Dify or BookStack behavior when such research is added.
 - Unknown:
-  - Test files, packaging commands, and CI configuration are not present yet.
+  - Packaging commands and CI configuration are not present yet.
 
 ## Implicit Rules And Constraints
 
@@ -80,6 +85,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 - BookStack API error mapping: user-facing contract terms are documented and should remain stable as new tools are added.
 - Implemented read/write tools: `create_page`, `update_page`, and `publish_page` introduce side effects and need stronger validation than credential checks.
 - Dify plugin YAML contracts: wrong source paths, credential names, or tool registrations can break runtime loading even when Python code imports locally.
+- Mock-based unit tests exist for the shared client and payload/input mapping, but they do not replace a real Dify runtime smoke test.
 
 ## Safe-Change Advice
 
@@ -91,7 +97,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 
 ## Open Questions
 
-- What exact local command should become the default validation command once tests are added?
+- What exact local command should become the default validation command for the existing unit tests?
 - Which Dify plugin runtime version should be used for the first package smoke test?
 - What normalized response shape should each Phase 1 BookStack tool return?
 
