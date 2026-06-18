@@ -181,6 +181,57 @@ class BookStackClient:
 
         return page_results
 
+    def list_books(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
+        params: dict[str, Any] = {}
+        if count is not None:
+            params["count"] = count
+        if offset is not None:
+            params["offset"] = offset
+
+        request_kwargs: dict[str, Any] = {}
+        if params:
+            request_kwargs["params"] = params
+
+        payload = self._request("GET", "books", **request_kwargs)
+        data = payload.get("data")
+
+        if not isinstance(data, list):
+            raise InvalidResponseError("Invalid BookStack response")
+
+        return payload
+
+    def list_chapters(
+        self,
+        book_id: Any | None = None,
+        count: Any | None = None,
+        offset: Any | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {}
+        if book_id is not None:
+            params["book_id"] = book_id
+        if count is not None:
+            params["count"] = count
+        if offset is not None:
+            params["offset"] = offset
+
+        request_kwargs: dict[str, Any] = {}
+        if params:
+            request_kwargs["params"] = params
+
+        payload = self._request(
+            "GET",
+            "chapters",
+            not_found_error=BookNotFoundError,
+            not_found_message="Book not found",
+            **request_kwargs,
+        )
+        data = payload.get("data")
+
+        if not isinstance(data, list):
+            raise InvalidResponseError("Invalid BookStack response")
+
+        return payload
+
     def get_page(self, page_id: Any) -> dict[str, Any]:
         return self._request(
             "GET",

@@ -24,8 +24,8 @@ The repository keeps the issue plan in Markdown so the roadmap is always visible
 | #009 | Implement publish_page tool | P0 | Tool | Tool supports create-or-update publishing and returns `success`, `action`, `page_id`, `title`, and `url`. |
 | #010 | Add basic unit tests for BookStackClient and payload mapping | P0 | Testing | Tests cover client behavior and payload mapping without real BookStack credentials. |
 | #011 | Add README, PRIVACY, ROADMAP and architecture docs | P0 | Documentation | Core docs exist and planned features are not described as complete. |
-| #012 | Implement list_books tool | P1 | Tool | Tool returns accessible books with stable metadata fields. |
-| #013 | Implement list_chapters tool | P1 | Tool | Tool lists chapters, optionally filtered by `book_id`. |
+| #012 | Implement list_books tool | P1 | Tool | Implemented: tool returns accessible books with stable metadata fields. |
+| #013 | Implement list_chapters tool | P1 | Tool | Implemented: tool lists chapters, optionally filtered by `book_id`. |
 | #014 | Improve error handling and user-facing error messages | P1 | Reliability | Common API failures map to documented user-facing errors. |
 | #015 | Add example Dify Workflow documentation | P1 | Documentation | Example publish-page workflow documentation exists. |
 | #016 | Add local packaging guide with dify plugin package | P1 | Documentation | Local packaging instructions are documented and reference Dify CLI. |

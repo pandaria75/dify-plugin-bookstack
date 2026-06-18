@@ -12,11 +12,11 @@ This document maps Phase 1 Dify tools to BookStack API endpoints and distinguish
 | `create_page` | Implemented | `POST /api/pages` | title, markdown, book/chapter, tags | created page metadata | book not found, chapter not found, permission denied |
 | `update_page` | Implemented | `PUT /api/pages/{id}` | page_id, title, markdown, tags | updated page metadata | page not found, permission denied |
 | `publish_page` | Implemented | `GET + POST/PUT /api/pages` | page_id or match fields, content, location | create/update result | invalid match target, page not found |
-| `list_books` | Planned | `GET /api/books` | filters optional | books list | invalid credentials, API unavailable |
-| `list_chapters` | Planned | `GET /api/chapters` | `book_id` optional | chapters list | book not found, API unavailable |
+| `list_books` | Implemented | `GET /api/books` | `count` and `offset` optional | books list with `count` and `total` | invalid credentials, API unavailable |
+| `list_chapters` | Implemented | `GET /api/chapters` | `book_id`, `count`, and `offset` optional | chapters list with `count` and `total` | book not found, API unavailable |
 
 ## Notes
 
 - The BookStack API uses `Authorization: Token <token_id>:<token_secret>`.
 - The implemented tools already normalize response fields into Dify-friendly JSON output.
-- `list_books` and `list_chapters` remain planned Phase 1 support tools before Datasource work begins.
+- `list_books` and `list_chapters` are implemented Phase 1 support tools before Datasource work begins.

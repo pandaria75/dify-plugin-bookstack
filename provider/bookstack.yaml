@@ -65,6 +65,8 @@ credentials_for_provider:
 tools:
   - tools/validate_credentials.yaml
   - tools/search_pages.yaml
+  - tools/list_books.yaml
+  - tools/list_chapters.yaml
   - tools/get_page.yaml
   - tools/create_page.yaml
   - tools/update_page.yaml

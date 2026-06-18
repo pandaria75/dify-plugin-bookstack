@@ -27,8 +27,8 @@
 - Implemented: `create_page`.
 - Implemented: `update_page`.
 - Implemented: `publish_page`.
-- Implement `list_books`.
-- Implement `list_chapters`.
+- Implemented: `list_books`.
+- Implemented: `list_chapters`.
 
 ## Phase 2: Enhanced Tool Coverage
 

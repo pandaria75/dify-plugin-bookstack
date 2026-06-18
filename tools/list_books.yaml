@@ -1,0 +1,37 @@
+identity:
+  name: list_books
+  author: gaohaoyv
+  label:
+    en_US: List Books
+    zh_Hans: 列出书籍
+description:
+  human:
+    en_US: List accessible BookStack books and return normalized book metadata.
+    zh_Hans: 列出可访问的 BookStack 书籍并返回标准化书籍元数据。
+  llm: List accessible BookStack books and return normalized book metadata.
+parameters:
+  - name: count
+    type: number
+    required: false
+    label:
+      en_US: Count
+      zh_Hans: 数量
+    human_description:
+      en_US: Optional maximum number of books to return.
+      zh_Hans: 可选，限制返回的书籍数量。
+    llm_description: Optional maximum number of books to return.
+    form: llm
+  - name: offset
+    type: number
+    required: false
+    label:
+      en_US: Offset
+      zh_Hans: 偏移量
+    human_description:
+      en_US: Optional offset for paginated BookStack book results.
+      zh_Hans: 可选，BookStack 书籍分页结果的偏移量。
+    llm_description: Optional offset for paginated BookStack book results.
+    form: llm
+extra:
+  python:
+    source: tools/list_books.py

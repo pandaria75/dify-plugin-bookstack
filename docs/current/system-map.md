@@ -31,6 +31,8 @@ It must not become a code index. List only the files, entrypoints, and flows nee
   - `tools/create_page.yaml` and `tools/create_page.py` expose page creation.
   - `tools/update_page.yaml` and `tools/update_page.py` expose page updates.
   - `tools/publish_page.yaml` and `tools/publish_page.py` expose create-or-update publishing.
+  - `tools/list_books.yaml` and `tools/list_books.py` expose book listing.
+  - `tools/list_chapters.yaml` and `tools/list_chapters.py` expose chapter listing with optional book filtering.
 - Inference:
   - Dify packaging and runtime loading should follow the standard plugin layout already present in this repository.
 - Unknown:
@@ -40,7 +42,7 @@ It must not become a code index. List only the files, entrypoints, and flows nee
 
 1. Fact: Dify provider credential validation -> `BookStackProvider._validate_credentials` -> `BookStackClient.from_credentials` -> `BookStackClient.validate_credentials` -> `GET /api/system`.
 2. Fact: `validate_credentials` tool invocation -> runtime credentials -> `BookStackClient.validate_credentials` -> JSON success message or text error message.
-3. Fact: `search_pages`, `get_page`, `create_page`, `update_page`, and `publish_page` tool invocations use `BookStackClient` for URL normalization, auth, timeout, SSL verification, and user-facing error mapping.
+3. Fact: `search_pages`, `get_page`, `create_page`, `update_page`, `publish_page`, `list_books`, and `list_chapters` tool invocations use `BookStackClient` for URL normalization, auth, timeout, SSL verification, and user-facing error mapping.
 4. Unknown: package-level behavior after installation into Dify has not been smoke-tested here.
 
 ## Related Files And Areas
@@ -57,6 +59,8 @@ Keep this selective. Include only the files or directories that matter for under
   - `tools/create_page.yaml` and `tools/create_page.py` - page creation tool contract and source.
   - `tools/update_page.yaml` and `tools/update_page.py` - page update tool contract and source.
   - `tools/publish_page.yaml` and `tools/publish_page.py` - create-or-update publish tool contract and source.
+  - `tools/list_books.yaml` and `tools/list_books.py` - book listing tool contract and source.
+  - `tools/list_chapters.yaml` and `tools/list_chapters.py` - chapter listing tool contract and source.
   - `bookstack_client.py` - shared BookStack HTTP wrapper and error mapping.
   - `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, and `docs/ISSUES.md` - implementation order and current planned-vs-implemented boundary.
 - Inference:
@@ -72,7 +76,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
   - Credentials are configured through the Dify provider schema and should not be hardcoded in code, docs examples, or tests.
   - Python source references and plugin YAML references use repository-relative paths such as `provider/bookstack.py`, `tools/validate_credentials.py`, `provider/bookstack.yaml`, and `tools/validate_credentials.yaml`, matching `dify_plugin` 0.9.x local loader behavior.
   - `_assets/icon.svg` is the plugin icon path from `manifest.yaml`.
-  - Keep only `list_books` and `list_chapters` described as planned Phase 1 tools.
+  - Phase 1 support tools `list_books` and `list_chapters` are implemented; later enhancement and Datasource tools remain planned.
   - `BookStackClient` is the shared integration seam for BookStack API requests and error mapping.
 - Inference:
   - Future tools should add YAML contracts before Python source and tests, matching the repository working style.
@@ -85,7 +89,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 - BookStack API error mapping: user-facing contract terms are documented and should remain stable as new tools are added.
 - Implemented read/write tools: `create_page`, `update_page`, and `publish_page` introduce side effects and need stronger validation than credential checks.
 - Dify plugin YAML contracts: wrong source paths, credential names, or tool registrations can break runtime loading even when Python code imports locally.
-- Mock-based unit tests exist for the shared client and payload/input mapping, but they do not replace a real Dify runtime smoke test.
+- Mock-based unit tests exist for the shared client and payload/input mapping, and Docker BookStack API smoke checks have confirmed the `books` and `chapters` list response shapes; these do not replace a real Dify runtime smoke test.
 
 ## Safe-Change Advice
 
@@ -99,7 +103,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 
 - What exact local command should become the default validation command for the existing unit tests?
 - Which Dify plugin runtime version should be used for the first package smoke test?
-- What normalized response shape should each Phase 1 BookStack tool return?
+- What normalized response shape should later Phase 2 BookStack tools return?
 
 ## Target-State Contrast (Optional)
 
