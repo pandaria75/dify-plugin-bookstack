@@ -2,7 +2,7 @@
 
 BookStack is a Dify plugin for publishing, reading, and syncing BookStack pages.
 
-This repository is in early development. The current goal is to establish a stable plugin skeleton, document the architecture, and define the first implementation steps for a BookStack Tool plugin.
+This repository is in active development. The current goal is to stabilize the BookStack Tool plugin MVP, document the architecture, and keep the implementation and docs aligned as Phase 1 tools land.
 
 ## Why BookStack + Dify
 
@@ -12,14 +12,14 @@ This repository is in early development. The current goal is to establish a stab
 
 ## Features
 
-- Planned Tool plugin for BookStack read/write operations.
+- Tool plugin for BookStack read/write operations.
 - Credential-based access through Dify plugin configuration.
 - Clear roadmap for future Datasource support.
 - Documented API mapping and implementation boundaries.
 
 ## Supported Tools
 
-Planned tool set for Phase 1:
+Implemented or planned tool set for Phase 1:
 
 - `validate_credentials`
 - `search_pages`
@@ -30,7 +30,8 @@ Planned tool set for Phase 1:
 - `list_books`
 - `list_chapters`
 
-Only a minimal skeleton and credential validation placeholder are implemented in this version.
+- `validate_credentials`, `search_pages`, `get_page`, `create_page`, `update_page`, and `publish_page` are implemented.
+- `list_books` and `list_chapters` remain planned Phase 1 support tools.
 
 ## Installation
 
@@ -58,9 +59,9 @@ See `docs/examples/workflow-publish-page.md` for the intended publish flow.
 
 ## Development Status
 
-Current status: early development.
+Current status: active development.
 
-The repository currently contains the project skeleton, design notes, issue breakdown, and a minimal client placeholder. Core BookStack tools are still planned.
+The repository currently contains the project skeleton, design notes, issue breakdown, the shared client, and the Phase 1 core BookStack tools. Phase 1 support tools remain planned.
 
 ## Roadmap
 

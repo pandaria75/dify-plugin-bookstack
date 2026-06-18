@@ -7,7 +7,7 @@ This document maps planned Dify tools to BookStack API endpoints.
 | Dify Tool | BookStack API | Input | Output | Errors |
 | --- | --- | --- | --- | --- |
 | `validate_credentials` | `GET /api/system` | none | `success` boolean | invalid credentials, permission denied, API unavailable |
-| `search_pages` | `GET /api/search/all` | `query` | page results | invalid credentials, API unavailable |
+| `search_pages` | `GET /api/search` | `query` | page results | invalid credentials, API unavailable |
 | `get_page` | `GET /api/pages/{id}` | `page_id` | page content and metadata | page not found, invalid response |
 | `create_page` | `POST /api/pages` | title, markdown, book/chapter, tags | created page metadata | book not found, chapter not found, permission denied |
 | `update_page` | `PUT /api/pages/{id}` | page_id, title, markdown, tags | updated page metadata | page not found, permission denied |

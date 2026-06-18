@@ -21,12 +21,12 @@
 
 ## Phase 1: Tool Plugin MVP
 
-- Implement `validate_credentials`.
-- Implement `search_pages`.
-- Implement `get_page`.
-- Implement `create_page`.
-- Implement `update_page`.
-- Implement `publish_page`.
+- Implemented: `validate_credentials`.
+- Implemented: `search_pages`.
+- Implemented: `get_page`.
+- Implemented: `create_page`.
+- Implemented: `update_page`.
+- Implemented: `publish_page`.
 - Implement `list_books`.
 - Implement `list_chapters`.
 

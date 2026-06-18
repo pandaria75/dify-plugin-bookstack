@@ -1,0 +1,26 @@
+identity:
+  name: get_page
+  author: gaohaoyv
+  label:
+    en_US: Get Page
+    zh_Hans: 获取页面
+description:
+  human:
+    en_US: Read a BookStack page by ID and return normalized content and metadata.
+    zh_Hans: 根据 ID 读取 BookStack 页面并返回标准化内容和元数据。
+  llm: Read a BookStack page by ID and return normalized content and metadata.
+parameters:
+  - name: page_id
+    type: string
+    required: true
+    label:
+      en_US: Page ID
+      zh_Hans: 页面 ID
+    human_description:
+      en_US: The BookStack page ID to read.
+      zh_Hans: 要读取的 BookStack 页面 ID。
+    llm_description: The BookStack page ID to read.
+    form: llm
+extra:
+  python:
+    source: tools/get_page.py

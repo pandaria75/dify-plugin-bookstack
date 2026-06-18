@@ -8,14 +8,14 @@ It must not become a code index. List only the files, entrypoints, and flows nee
 
 ## Scope
 
-- Area or workflow: Dify Tool plugin skeleton for BookStack integration.
-- Why this document exists: capture the current implemented plugin shape before more Phase 1 tools are added.
-- Last substantial verification date: 2026-06-16.
+- Area or workflow: Dify Tool plugin MVP for BookStack integration.
+- Why this document exists: capture the current implemented plugin shape as Phase 1 tools land.
+- Last substantial verification date: 2026-06-18.
 - Related rules: `AGENTS.md`, `.aiassistant/rules/00-repository-rules.md`, `.aiassistant/rules/workflow-rules.md`.
 
 ## Knowledge Status
 
-- Facts confirmed: the repository is an early-stage Dify Tool plugin; provider credential validation and the `validate_credentials` tool use the shared BookStack HTTP client.
+- Facts confirmed: the repository is an active Dify Tool plugin MVP; provider credential validation and the implemented Phase 1 tools use the shared BookStack HTTP client.
 - Inferences needing confirmation: Dify runtime behavior for packaging and invocation should be checked against a real Dify plugin runtime before release.
 - Unknowns or missing evidence: there is no automated test suite or CI entrypoint in the repository yet.
 
@@ -25,7 +25,12 @@ It must not become a code index. List only the files, entrypoints, and flows nee
   - `manifest.yaml` declares the plugin as a Dify `tool` plugin and points Dify to `/provider/bookstack.yaml`.
   - `provider/bookstack.yaml` defines provider identity, credential schema, tool list, and Python provider source.
   - `provider/bookstack.py` validates configured provider credentials through `BookStackClient`.
-  - `tools/validate_credentials.yaml` and `tools/validate_credentials.py` expose the currently implemented tool.
+  - `tools/validate_credentials.yaml` and `tools/validate_credentials.py` expose the credential-validation tool.
+  - `tools/search_pages.yaml` and `tools/search_pages.py` expose page search.
+  - `tools/get_page.yaml` and `tools/get_page.py` expose page reads.
+  - `tools/create_page.yaml` and `tools/create_page.py` expose page creation.
+  - `tools/update_page.yaml` and `tools/update_page.py` expose page updates.
+  - `tools/publish_page.yaml` and `tools/publish_page.py` expose create-or-update publishing.
 - Inference:
   - Dify packaging and runtime loading should follow the standard plugin layout already present in this repository.
 - Unknown:
@@ -35,7 +40,7 @@ It must not become a code index. List only the files, entrypoints, and flows nee
 
 1. Fact: Dify provider credential validation -> `BookStackProvider._validate_credentials` -> `BookStackClient.from_credentials` -> `BookStackClient.validate_credentials` -> `GET /api/system`.
 2. Fact: `validate_credentials` tool invocation -> runtime credentials -> `BookStackClient.validate_credentials` -> JSON success message or text error message.
-3. Inference: future BookStack tools should share `BookStackClient` for URL normalization, auth, timeout, SSL verification, and user-facing error mapping.
+3. Fact: `search_pages`, `get_page`, `create_page`, `update_page`, and `publish_page` tool invocations use `BookStackClient` for URL normalization, auth, timeout, SSL verification, and user-facing error mapping.
 4. Unknown: package-level behavior after installation into Dify has not been smoke-tested here.
 
 ## Related Files And Areas
@@ -48,7 +53,7 @@ Keep this selective. Include only the files or directories that matter for under
   - `provider/bookstack.py` - provider credential validation entrypoint.
   - `tools/validate_credentials.yaml` and `tools/validate_credentials.py` - only implemented tool contract and source.
   - `bookstack_client.py` - shared BookStack HTTP wrapper and error mapping.
-  - `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, and `docs/ISSUES.md` - planned implementation order and current planned-vs-implemented boundary.
+  - `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, and `docs/ISSUES.md` - implementation order and current planned-vs-implemented boundary.
 - Inference:
   - `docs/research-notes.md` should remain the place for version-sensitive Dify or BookStack behavior when such research is added.
 - Unknown:
@@ -62,7 +67,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
   - Credentials are configured through the Dify provider schema and should not be hardcoded in code, docs examples, or tests.
   - Python source references and plugin YAML references use repository-relative paths such as `provider/bookstack.py`, `tools/validate_credentials.py`, `provider/bookstack.yaml`, and `tools/validate_credentials.yaml`, matching `dify_plugin` 0.9.x local loader behavior.
   - `_assets/icon.svg` is the plugin icon path from `manifest.yaml`.
-  - Current functionality must not describe planned Phase 1 tools as available.
+  - Keep only `list_books` and `list_chapters` described as planned Phase 1 tools.
   - `BookStackClient` is the shared integration seam for BookStack API requests and error mapping.
 - Inference:
   - Future tools should add YAML contracts before Python source and tests, matching the repository working style.
@@ -73,7 +78,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 
 - Credential handling and auth headers: mistakes can leak `token_secret` or make validation fail with misleading errors.
 - BookStack API error mapping: user-facing contract terms are documented and should remain stable as new tools are added.
-- Planned read/write tools: `create_page`, `update_page`, and `publish_page` will introduce side effects and need stronger validation than credential checks.
+- Implemented read/write tools: `create_page`, `update_page`, and `publish_page` introduce side effects and need stronger validation than credential checks.
 - Dify plugin YAML contracts: wrong source paths, credential names, or tool registrations can break runtime loading even when Python code imports locally.
 
 ## Safe-Change Advice
@@ -93,7 +98,7 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 ## Target-State Contrast (Optional)
 
 - Related target doc: `docs/target/architecture-intent.md`.
-- Why current state differs from target: the repository currently has a skeleton and credential validation path; the broader Tool plugin and later Datasource direction remain planned work.
+- Why current state differs from target: the repository now has the core Tool plugin MVP; support tools, later enhancement work, and the Datasource direction remain planned work.
 
 ## Maintenance Notes
 

@@ -64,6 +64,11 @@ credentials_for_provider:
       zh_Hans: 验证 SSL
 tools:
   - tools/validate_credentials.yaml
+  - tools/search_pages.yaml
+  - tools/get_page.yaml
+  - tools/create_page.yaml
+  - tools/update_page.yaml
+  - tools/publish_page.yaml
 extra:
   python:
     source: provider/bookstack.py

@@ -1,0 +1,81 @@
+identity:
+  name: publish_page
+  author: gaohaoyv
+  label:
+    en_US: Publish Page
+    zh_Hans: 发布页面
+description:
+  human:
+    en_US: Create or update a BookStack page by page ID or safe exact title match.
+    zh_Hans: 通过页面 ID 或安全的精确标题匹配创建或更新 BookStack 页面。
+  llm: Create or update a BookStack page by page ID or safe exact title match.
+parameters:
+  - name: title
+    type: string
+    required: true
+    label:
+      en_US: Title
+      zh_Hans: 标题
+    human_description:
+      en_US: Page title used for creation and exact-title matching when page_id is not provided.
+      zh_Hans: 页面标题；未提供 page_id 时用于创建和精确标题匹配。
+    llm_description: Page title used for creation and exact-title matching when page_id is not provided.
+    form: llm
+  - name: markdown
+    type: string
+    required: true
+    label:
+      en_US: Markdown
+      zh_Hans: Markdown 内容
+    human_description:
+      en_US: Markdown content to publish to the page.
+      zh_Hans: 要发布到页面的 Markdown 内容。
+    llm_description: Markdown content to publish to the page.
+    form: llm
+  - name: page_id
+    type: string
+    required: false
+    label:
+      en_US: Page ID
+      zh_Hans: 页面 ID
+    human_description:
+      en_US: Optional BookStack page ID. When provided, publish_page updates this exact page.
+      zh_Hans: 可选的 BookStack 页面 ID；提供后将更新该指定页面。
+    llm_description: Optional BookStack page ID. When provided, publish_page updates this exact page.
+    form: llm
+  - name: tags
+    type: string
+    required: false
+    label:
+      en_US: Tags
+      zh_Hans: 标签
+    human_description:
+      en_US: Optional tag text or list-like value forwarded as simple tags.
+      zh_Hans: 可选标签文本或列表式值，将作为简单标签传递。
+    llm_description: Optional tags for the published page.
+    form: llm
+  - name: book_id
+    type: string
+    required: false
+    label:
+      en_US: Book ID
+      zh_Hans: 书籍 ID
+    human_description:
+      en_US: Optional BookStack book ID used to scope title matching and create a root page when no match exists.
+      zh_Hans: 可选的 BookStack 书籍 ID，用于限定标题匹配，并在无匹配时创建根页面。
+    llm_description: Optional BookStack book ID used to scope title matching and create a root page when no match exists.
+    form: llm
+  - name: chapter_id
+    type: string
+    required: false
+    label:
+      en_US: Chapter ID
+      zh_Hans: 章节 ID
+    human_description:
+      en_US: Optional BookStack chapter ID used to scope title matching and create a chapter page when no match exists.
+      zh_Hans: 可选的 BookStack 章节 ID，用于限定标题匹配，并在无匹配时创建章节页面。
+    llm_description: Optional BookStack chapter ID used to scope title matching and create a chapter page when no match exists.
+    form: llm
+extra:
+  python:
+    source: tools/publish_page.py

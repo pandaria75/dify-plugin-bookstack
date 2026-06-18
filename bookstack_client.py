@@ -163,3 +163,109 @@ class BookStackClient:
 
     def validate_credentials(self) -> None:
         self._request("GET", "system")
+
+    def search_pages(self, query: str) -> list[dict[str, Any]]:
+        payload = self._request("GET", "search", params={"query": query})
+        data = payload.get("data")
+
+        if not isinstance(data, list):
+            raise InvalidResponseError("Invalid BookStack response")
+
+        page_results: list[dict[str, Any]] = []
+        for item in data:
+            if not isinstance(item, dict):
+                raise InvalidResponseError("Invalid BookStack response")
+            if item.get("type") not in {None, "page"}:
+                continue
+            page_results.append(item)
+
+        return page_results
+
+    def get_page(self, page_id: Any) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            f"pages/{page_id}",
+            not_found_error=PageNotFoundError,
+            not_found_message="Page not found",
+        )
+
+    @staticmethod
+    def _build_page_payload(
+        *,
+        title: Any | None = None,
+        markdown: Any | None = None,
+        tags: Any | None = None,
+        book_id: Any | None = None,
+        chapter_id: Any | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {}
+
+        if title is not None:
+            payload["name"] = title
+        if markdown is not None:
+            payload["markdown"] = markdown
+        if tags is not None:
+            payload["tags"] = tags
+        if book_id is not None:
+            payload["book_id"] = book_id
+        if chapter_id is not None:
+            payload["chapter_id"] = chapter_id
+
+        return payload
+
+    def create_page(
+        self,
+        *,
+        title: Any,
+        markdown: Any,
+        tags: Any | None = None,
+        book_id: Any | None = None,
+        chapter_id: Any | None = None,
+    ) -> dict[str, Any]:
+        not_found_error: type[BookStackError]
+        not_found_message: str
+
+        if chapter_id is not None:
+            not_found_error = ChapterNotFoundError
+            not_found_message = "Chapter not found"
+        else:
+            not_found_error = BookNotFoundError
+            not_found_message = "Book not found"
+
+        return self._request(
+            "POST",
+            "pages",
+            json=self._build_page_payload(
+                title=title,
+                markdown=markdown,
+                tags=tags,
+                book_id=book_id,
+                chapter_id=chapter_id,
+            ),
+            not_found_error=not_found_error,
+            not_found_message=not_found_message,
+        )
+
+    def update_page(
+        self,
+        page_id: Any,
+        *,
+        title: Any | None = None,
+        markdown: Any | None = None,
+        tags: Any | None = None,
+        book_id: Any | None = None,
+        chapter_id: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._request(
+            "PUT",
+            f"pages/{page_id}",
+            json=self._build_page_payload(
+                title=title,
+                markdown=markdown,
+                tags=tags,
+                book_id=book_id,
+                chapter_id=chapter_id,
+            ),
+            not_found_error=PageNotFoundError,
+            not_found_message="Page not found",
+        )
