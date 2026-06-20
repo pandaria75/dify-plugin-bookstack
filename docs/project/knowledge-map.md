@@ -73,6 +73,7 @@ If the current state is unclear, document the uncertainty as an unknown instead 
   - Current: `docs/current/system-map.md`
   - Architecture: `docs/ARCHITECTURE.md`
   - API Mapping: `docs/API_MAPPING.md`
+  - Marketplace: `docs/MARKETPLACE.md`
   - Target: `docs/target/architecture-intent.md`
   - Planning: `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, `docs/ISSUES.md`
 - Rules:
@@ -84,6 +85,7 @@ If the current state is unclear, document the uncertainty as an unknown instead 
   - changing provider credentials, plugin YAML, icons, or Dify source references
   - changing `BookStackClient`, user-facing error terms, or API response mapping
   - updating roadmap status for planned versus implemented functionality
+  - updating Marketplace readiness, packaging, import, or release-checklist guidance
   - designing Datasource behavior after Tool plugin behavior stabilizes
 - Boundaries:
   - treat `docs/current/system-map.md` as observed current behavior, not future intent

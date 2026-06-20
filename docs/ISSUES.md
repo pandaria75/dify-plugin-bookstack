@@ -31,7 +31,7 @@ The repository keeps the issue plan in Markdown so the roadmap is always visible
 | #016 | Add local packaging guide with dify plugin package | P1 | Documentation | Local packaging instructions are documented and reference Dify CLI. |
 | #017 | Add CI for lint and tests | P1 | CI | Pull requests run unit tests and selected static checks. |
 | #018 | Add GitHub issue templates | P1 | Repository Maintenance | Bug, feature, and question issue templates exist. |
-| #019 | Add Marketplace release checklist | P1 | Documentation | Marketplace checklist covers README, privacy, icon, version, packaging, and release flow. |
+| #019 | Add Marketplace release checklist | P1 | Documentation | Marketplace checklist covers manifest, README, privacy, icon, version, packaging, import, and release flow. |
 | #020 | Implement list_shelves tool | P2 | Tool | Tool lists shelves with normalized output. |
 | #021 | Implement list_pages tool | P2 | Tool | Tool lists pages with stable metadata and pagination plan. |
 | #022 | Support tags mapping more completely | P2 | Data Mapping | Tag inputs and outputs are deterministic and documented. |

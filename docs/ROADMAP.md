@@ -47,7 +47,7 @@
 
 ## Phase 4: Marketplace Readiness
 
-- Review existing English README and privacy policy for Marketplace readiness.
-- Prepare icon and usage examples.
-- Add packaging and release guidance.
-- Validate Marketplace submission requirements.
+- Keep the English README, privacy policy, manifest, and icon aligned for Marketplace readiness.
+- Capture practical packaging, import, and smoke-check evidence.
+- Prepare icon and usage examples suitable for release packaging.
+- Revalidate current Marketplace submission requirements before any public submission.

@@ -49,6 +49,8 @@ Recommended preparation checklist:
 2. Confirm `_assets/icon.svg` exists.
 3. Confirm `provider/bookstack.yaml` is referenced by `manifest.yaml`.
 4. Confirm the provider YAML still references repository-relative tool YAML and Python source paths.
+5. Confirm `README.md` remains English-only and only describes implemented tools as implemented.
+6. Confirm `PRIVACY.md` still matches the current credential and data-handling behavior.
 
 Current repository-specific packaging assumptions:
 
@@ -104,6 +106,8 @@ Then validate write-capable tools only against a safe Book, Chapter, or test pag
 1. `create_page`
 2. `update_page`
 3. `publish_page`
+
+This Docker-based validation path is supplemental manual verification for packaging and import confidence. It is not required for GitHub Actions acceptance.
 
 ## Minimal Import And Usability Check
 
