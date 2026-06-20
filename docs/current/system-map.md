@@ -17,7 +17,7 @@ It must not become a code index. List only the files, entrypoints, and flows nee
 
 - Facts confirmed: the repository is an active Dify Tool plugin MVP; provider credential validation and the implemented Phase 1 tools use the shared BookStack HTTP client.
 - Inferences needing confirmation: Dify runtime behavior for packaging and invocation should be checked against a real Dify plugin runtime before release.
-- Unknowns or missing evidence: there is no CI entrypoint in the repository yet, and no live Dify package smoke test evidence has been captured here.
+- Unknowns or missing evidence: the repository now has a pull-request CI entrypoint in `.github/workflows/ci.yml`, but no live Dify package smoke test evidence has been captured here.
 
 ## Entrypoints
 
@@ -66,7 +66,7 @@ Keep this selective. Include only the files or directories that matter for under
 - Inference:
   - `docs/research-notes.md` should remain the place for version-sensitive Dify or BookStack behavior when such research is added.
 - Unknown:
-  - Packaging commands are documented, but no repository-captured live Dify package smoke-test evidence exists yet, and CI configuration is not present.
+  - Packaging commands are documented, but no repository-captured live Dify package smoke-test evidence exists yet.
 
 ## Implicit Rules And Constraints
 
