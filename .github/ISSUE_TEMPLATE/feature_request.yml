@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest an improvement or new capability.
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing your idea.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Briefly describe the need or pain point.
+      placeholder: It is hard to ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to happen?
+      description: Keep it short and practical.
+      placeholder: I would like the plugin to ...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Extra context
+      description: Optional screenshots, examples, or related links.

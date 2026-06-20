@@ -1,0 +1,24 @@
+name: Question
+description: Ask for help or clarification.
+title: "[Question] "
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please share enough context so others can help quickly.
+  - type: textarea
+    id: question
+    attributes:
+      label: What is your question?
+      description: Ask your question in one place.
+      placeholder: How do I ...?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Relevant context
+      description: Optional setup details, screenshots, or links.
+      placeholder: I am using ...
