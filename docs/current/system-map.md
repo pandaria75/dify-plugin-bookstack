@@ -66,7 +66,7 @@ Keep this selective. Include only the files or directories that matter for under
 - Inference:
   - `docs/research-notes.md` should remain the place for version-sensitive Dify or BookStack behavior when such research is added.
 - Unknown:
-  - Packaging commands and CI configuration are not present yet.
+  - Packaging commands are documented, but no repository-captured live Dify package smoke-test evidence exists yet, and CI configuration is not present.
 
 ## Implicit Rules And Constraints
 

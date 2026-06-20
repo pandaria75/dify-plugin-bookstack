@@ -28,13 +28,14 @@
 - `create_page`
 - `update_page`
 - `publish_page`
+- `list_books`
+- `list_chapters`
 - 基础单元测试覆盖（共享客户端与页面参数/载荷映射）
 
 后续计划实现：
 
-- `list_books`
-- `list_chapters`
 - Datasource 同步能力
+- 更丰富的工具增强能力（例如更安全的页面匹配与扩展查询）
 
 ## 开发路线图
 
@@ -42,8 +43,8 @@
 
 ## 本地开发说明
 
-当前仓库没有依赖 Dify CLI 生成骨架，而是根据官方文档手工建立最小结构。后续可使用 `dify plugin package` 进行打包验证。
+当前仓库没有依赖 Dify CLI 生成骨架，而是根据官方文档手工建立最小结构。当前文档将 `dify plugin package` 视为可行的打包命令形态，但由于 CLI 版本可能变化，实际操作前应先用 `dify --help` 与 `dify plugin --help` 进行确认。更多本地打包、导入与验证步骤见 `docs/DEVELOPMENT.md` 与 `docs/MARKETPLACE.md`。
 
 ## 后续计划
 
-优先补齐 Phase 1 支撑工具，然后补充增强工具与 Datasource 设计。
+优先稳定当前已实现的 Phase 1 工具集，补充更多验证与打包导入证据，然后再推进增强工具与 Datasource 设计。

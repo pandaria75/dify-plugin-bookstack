@@ -43,6 +43,14 @@ def _invalid_credentials() -> InvalidCredentialsError:
     return InvalidCredentialsError("Invalid credentials")
 
 
+def _service_unavailable() -> ServiceUnavailableError:
+    return ServiceUnavailableError("BookStack API unavailable")
+
+
+def _invalid_response() -> InvalidResponseError:
+    return InvalidResponseError("Invalid BookStack response")
+
+
 @dataclass(slots=True)
 class BookStackClient:
     base_url: str
@@ -137,17 +145,21 @@ class BookStackClient:
                 verify=self.verify_ssl,
                 **kwargs,
             )
-        except requests.RequestException as exc:
-            raise ServiceUnavailableError("BookStack API unavailable") from exc
+        except (requests.Timeout, requests.ConnectionError, requests.RequestException) as exc:
+            raise _service_unavailable() from exc
 
         if response.status_code in {401, 403}:
             if response.status_code == 401:
-                raise InvalidCredentialsError("Invalid credentials")
+                raise _invalid_credentials()
             raise PermissionDeniedError("Permission denied")
         if response.status_code == 404:
             raise not_found_error(not_found_message)
-        if response.status_code >= 500:
-            raise ServiceUnavailableError("BookStack API unavailable")
+        if response.status_code in {400, 422}:
+            raise _invalid_response()
+        if response.status_code == 429 or response.status_code >= 500:
+            raise _service_unavailable()
+        if response.status_code >= 400:
+            raise _service_unavailable()
 
         if not response.content:
             return {}
@@ -155,11 +167,11 @@ class BookStackClient:
         try:
             payload = response.json()
         except ValueError as exc:
-            raise InvalidResponseError("Invalid BookStack response") from exc
+            raise _invalid_response() from exc
 
         if isinstance(payload, dict):
             return payload
-        raise InvalidResponseError("Invalid BookStack response")
+        raise _invalid_response()
 
     def validate_credentials(self) -> None:
         self._request("GET", "system")

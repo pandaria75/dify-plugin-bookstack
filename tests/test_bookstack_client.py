@@ -3,11 +3,15 @@ from __future__ import annotations
 import unittest
 from unittest.mock import Mock, patch
 
+import requests
+
 from bookstack_client import (
     BookNotFoundError,
     BookStackClient,
+    ChapterNotFoundError,
     InvalidCredentialsError,
     InvalidResponseError,
+    PageNotFoundError,
     PermissionDeniedError,
     ServiceUnavailableError,
 )
@@ -96,7 +100,9 @@ class BookStackClientTestCase(unittest.TestCase):
         cases = [
             (401, InvalidCredentialsError, "Invalid credentials"),
             (403, PermissionDeniedError, "Permission denied"),
+            (429, ServiceUnavailableError, "BookStack API unavailable"),
             (500, ServiceUnavailableError, "BookStack API unavailable"),
+            (418, ServiceUnavailableError, "BookStack API unavailable"),
         ]
 
         for status_code, error_type, message in cases:
@@ -105,6 +111,70 @@ class BookStackClientTestCase(unittest.TestCase):
                 with patch("bookstack_client.requests.Session", return_value=fake_session):
                     with self.assertRaisesRegex(error_type, message):
                         client._request("GET", "system")
+
+    def test_request_maps_400_and_422_to_invalid_response(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        for status_code in (400, 422):
+            with self.subTest(status_code=status_code):
+                fake_session = FakeSession(FakeResponse(status_code, content=b"{}"))
+                with patch("bookstack_client.requests.Session", return_value=fake_session):
+                    with self.assertRaisesRegex(InvalidResponseError, "Invalid BookStack response"):
+                        client._request("POST", "pages")
+
+    def test_request_maps_timeout_and_connection_errors_to_service_unavailable(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        for request_error in (requests.Timeout("timed out"), requests.ConnectionError("offline")):
+            with self.subTest(error_type=type(request_error).__name__):
+                fake_session = Mock()
+                fake_session.headers = {}
+                fake_session.request = Mock(side_effect=request_error)
+                with patch("bookstack_client.requests.Session", return_value=fake_session):
+                    with self.assertRaisesRegex(ServiceUnavailableError, "BookStack API unavailable"):
+                        client._request("GET", "system")
+
+    def test_request_rejects_non_object_json(self):
+        response = FakeResponse(200, content=b"[]", json_value=[])
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            with self.assertRaisesRegex(InvalidResponseError, "Invalid BookStack response"):
+                client._request("GET", "system")
+
+    def test_get_page_404_uses_page_not_found(self):
+        response = FakeResponse(404, content=b"{}")
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            with self.assertRaisesRegex(PageNotFoundError, "Page not found"):
+                client.get_page("123")
+
+    def test_list_chapters_404_uses_book_not_found(self):
+        response = FakeResponse(404, content=b"{}")
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            with self.assertRaisesRegex(BookNotFoundError, "Book not found"):
+                client.list_chapters(book_id="7")
+
+    def test_create_page_404_uses_book_or_chapter_specific_not_found(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        cases = [
+            ({"title": "T", "markdown": "M", "book_id": "7"}, BookNotFoundError, "Book not found"),
+            ({"title": "T", "markdown": "M", "chapter_id": "11"}, ChapterNotFoundError, "Chapter not found"),
+        ]
+
+        for kwargs, error_type, message in cases:
+            with self.subTest(message=message):
+                fake_session = FakeSession(FakeResponse(404, content=b"{}"))
+                with patch("bookstack_client.requests.Session", return_value=fake_session):
+                    with self.assertRaisesRegex(error_type, message):
+                        client.create_page(**kwargs)
 
     def test_request_rejects_invalid_json(self):
         response = FakeResponse(200, content=b"not-json", json_error=ValueError("bad json"))

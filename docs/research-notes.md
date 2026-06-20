@@ -14,6 +14,17 @@ Repository-local assumption confirmed against `dify_plugin` 0.9.1: plugin YAML r
 
 The local environment did not have the `dify` CLI installed, so this repository was initialized manually instead of via scaffold generation.
 
+For packaging guidance, this repository currently treats `dify plugin package` as the expected command shape, but that assumption remains version-sensitive and should be verified with the installed CLI help output before release or automation work.
+
+Recommended local verification sequence:
+
+```bash
+dify --help
+dify plugin --help
+```
+
+If the installed CLI exposes a different packaging command, the docs should be updated to match the verified command rather than keeping stale syntax.
+
 ## BookStack API Notes
 
 - Authentication uses `Authorization: Token <token_id>:<token_secret>`.
@@ -26,6 +37,7 @@ For this plugin, delete operations remain out of scope unless a future issue exp
 ## Version-Sensitive Unknowns
 
 - Dify packaging and runtime loading have not been smoke-tested in this repository yet.
+- The exact supported CLI installation command and packaging syntax should be re-checked against current Dify documentation before pinning any version-specific guidance.
 - Marketplace packaging requirements should be revalidated before release.
 - BookStack payload details for each planned tool should be confirmed while implementing that tool and covered by mocked tests once tests exist.
 

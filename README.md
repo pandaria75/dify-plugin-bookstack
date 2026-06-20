@@ -19,7 +19,7 @@ This repository is in active development. The current goal is to stabilize the B
 
 ## Supported Tools
 
-Implemented or planned tool set for Phase 1:
+Current implemented Phase 1 tool set:
 
 - `validate_credentials`
 - `search_pages`
@@ -30,8 +30,8 @@ Implemented or planned tool set for Phase 1:
 - `list_books`
 - `list_chapters`
 
-- `validate_credentials`, `search_pages`, `get_page`, `create_page`, `update_page`, and `publish_page` are implemented.
-- `list_books` and `list_chapters` remain planned Phase 1 support tools.
+- All tools listed above are implemented in the current repository.
+- Later enhancement tools and Datasource support remain planned work.
 
 ## Installation
 
@@ -39,7 +39,8 @@ This plugin follows the current Dify plugin structure described in the official 
 
 1. Install the Dify plugin CLI if you want to package or debug locally.
 2. Configure your BookStack credentials in the Dify plugin UI.
-3. Run the plugin with the Dify runtime or package it into a `.difypkg` file.
+3. Package the plugin into a `.difypkg` file and import it into a Dify environment for local validation.
+4. See `docs/DEVELOPMENT.md` and `docs/MARKETPLACE.md` for version-sensitive CLI, packaging, and import guidance.
 
 ## Configuration
 
@@ -55,13 +56,13 @@ Configure the provider with these credential fields:
 
 ## Example Workflow
 
-See `docs/examples/workflow-publish-page.md` for the intended publish flow.
+See `docs/examples/workflow-publish-page.md` for an example publish flow built around the implemented `publish_page` tool.
 
 ## Development Status
 
 Current status: active development.
 
-The repository currently contains the project skeleton, design notes, issue breakdown, the shared client, and the Phase 1 core BookStack tools. Phase 1 support tools remain planned.
+The repository currently contains the project skeleton, design notes, issue breakdown, the shared client, and the implemented Phase 1 BookStack tools. Later enhancement tools and Datasource work remain planned.
 
 ## Roadmap
 
