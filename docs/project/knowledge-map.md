@@ -75,6 +75,7 @@ If the current state is unclear, document the uncertainty as an unknown instead 
   - API Mapping: `docs/API_MAPPING.md`
   - Marketplace: `docs/MARKETPLACE.md`
   - Target: `docs/target/architecture-intent.md`
+  - Target: `docs/target/datasource-design.md`
   - Planning: `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, `docs/ISSUES.md`
 - Rules:
   - `AGENTS.md`
