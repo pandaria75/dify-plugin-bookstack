@@ -10,12 +10,12 @@ It must not become a code index. List only the files, entrypoints, and flows nee
 
 - Area or workflow: Dify Tool plugin MVP for BookStack integration.
 - Why this document exists: capture the current implemented plugin shape as Phase 1 tools land.
-- Last substantial verification date: 2026-06-18.
+- Last substantial verification date: 2026-06-20. Phase 2 tools (#020-#023) completed.
 - Related rules: `AGENTS.md`, `.aiassistant/rules/00-repository-rules.md`, `.aiassistant/rules/workflow-rules.md`.
 
 ## Knowledge Status
 
-- Facts confirmed: the repository is an active Dify Tool plugin MVP; provider credential validation and the implemented Phase 1 tools use the shared BookStack HTTP client.
+- Fact: the repository is an active Dify Tool plugin MVP; provider credential validation and the implemented Phase 1+2 tools use the shared BookStack HTTP client. Phase 2 added `list_shelves`, `list_pages`, deterministic tag mapping, and expanded `publish_page` matching (title, path, doc_id).
 - Inferences needing confirmation: Dify runtime behavior for packaging and invocation should be checked against a real Dify plugin runtime before release.
 - Unknowns or missing evidence: the repository now has a pull-request CI entrypoint in `.github/workflows/ci.yml`, but no live Dify package smoke test evidence has been captured here.
 
@@ -33,6 +33,8 @@ It must not become a code index. List only the files, entrypoints, and flows nee
   - `tools/publish_page.yaml` and `tools/publish_page.py` expose create-or-update publishing.
   - `tools/list_books.yaml` and `tools/list_books.py` expose book listing.
   - `tools/list_chapters.yaml` and `tools/list_chapters.py` expose chapter listing with optional book filtering.
+  - `tools/list_shelves.yaml` and `tools/list_shelves.py` expose shelf listing.
+  - `tools/list_pages.yaml` and `tools/list_pages.py` expose page listing with `count`/`offset` pagination.
 - Inference:
   - Dify packaging and runtime loading should follow the standard plugin layout already present in this repository.
 - Unknown:
@@ -42,8 +44,9 @@ It must not become a code index. List only the files, entrypoints, and flows nee
 
 1. Fact: Dify provider credential validation -> `BookStackProvider._validate_credentials` -> `BookStackClient.from_credentials` -> `BookStackClient.validate_credentials` -> `GET /api/system`.
 2. Fact: `validate_credentials` tool invocation -> runtime credentials -> `BookStackClient.validate_credentials` -> JSON success message or text error message.
-3. Fact: `search_pages`, `get_page`, `create_page`, `update_page`, `publish_page`, `list_books`, and `list_chapters` tool invocations use `BookStackClient` for URL normalization, auth, timeout, SSL verification, and user-facing error mapping.
-4. Unknown: package-level behavior after installation into Dify has not been smoke-tested here.
+3. Fact: `search_pages`, `get_page`, `create_page`, `update_page`, `publish_page`, `list_books`, `list_chapters`, `list_shelves`, and `list_pages` tool invocations use `BookStackClient` for URL normalization, auth, timeout, SSL verification, and user-facing error mapping.
+4. Fact: Docker BookStack API smoke validation on 2026-06-20 confirmed configured local credentials can reach `system`, `books`, `chapters`, `shelves`, and `pages`; list endpoints returned the expected `data`/`total` shape with an empty local dataset.
+5. Unknown: package-level behavior after installation into Dify has not been smoke-tested here.
 
 ## Related Files And Areas
 
@@ -61,6 +64,8 @@ Keep this selective. Include only the files or directories that matter for under
   - `tools/publish_page.yaml` and `tools/publish_page.py` - create-or-update publish tool contract and source.
   - `tools/list_books.yaml` and `tools/list_books.py` - book listing tool contract and source.
   - `tools/list_chapters.yaml` and `tools/list_chapters.py` - chapter listing tool contract and source.
+  - `tools/list_shelves.yaml` and `tools/list_shelves.py` - shelf listing tool contract and source.
+  - `tools/list_pages.yaml` and `tools/list_pages.py` - page listing tool contract and source.
   - `bookstack_client.py` - shared BookStack HTTP wrapper and error mapping.
   - `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, and `docs/ISSUES.md` - implementation order and current planned-vs-implemented boundary.
 - Inference:
@@ -76,7 +81,10 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
   - Credentials are configured through the Dify provider schema and should not be hardcoded in code, docs examples, or tests.
   - Python source references and plugin YAML references use repository-relative paths such as `provider/bookstack.py`, `tools/validate_credentials.py`, `provider/bookstack.yaml`, and `tools/validate_credentials.yaml`, matching `dify_plugin` 0.9.x local loader behavior.
   - `_assets/icon.svg` is the plugin icon path from `manifest.yaml`.
-  - Phase 1 support tools `list_books` and `list_chapters` are implemented; later enhancement and Datasource tools remain planned.
+  - Phase 1 support tools `list_books` and `list_chapters` are implemented.
+  - Phase 2 enhancement tools `list_shelves` and `list_pages` are implemented.
+  - `publish_page` supports safe matching by `page_id`, `doc_id` tag, normalized path, then exact title fallback.
+  - Tag inputs normalize into BookStack tag objects with `name` and `value` fields; structured tag input avoids delimiter ambiguity.
   - `BookStackClient` is the shared integration seam for BookStack API requests and error mapping.
 - Inference:
   - Future tools should add YAML contracts before Python source and tests, matching the repository working style.
@@ -89,13 +97,13 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 - BookStack API error mapping: user-facing contract terms are documented and should remain stable as new tools are added.
 - Implemented read/write tools: `create_page`, `update_page`, and `publish_page` introduce side effects and need stronger validation than credential checks.
 - Dify plugin YAML contracts: wrong source paths, credential names, or tool registrations can break runtime loading even when Python code imports locally.
-- Mock-based unit tests exist for the shared client and payload/input mapping, and Docker BookStack API smoke checks have confirmed the `books` and `chapters` list response shapes; these do not replace a real Dify runtime smoke test.
+- Mock-based unit tests exist for the shared client and payload/input mapping, and Docker BookStack API smoke checks have confirmed the `books`, `chapters`, `shelves`, and `pages` list response shapes; these do not replace a real Dify runtime smoke test.
 
 ## Safe-Change Advice
 
 - Start from these entrypoints or seams: provider YAML, tool YAML, and `BookStackClient` before changing runtime behavior.
 - Change these areas together when relevant: a new tool should update its YAML contract, Python source, docs/roadmap status, and tests when tests exist.
-- Re-check these behaviors after changes: credential field names, `/api` URL prefixing, auth header construction, timeout/SSL handling, and documented error messages.
+- Re-check these behaviors after changes: credential field names, `/api` URL prefixing, auth header construction, timeout/SSL handling, documented error messages, tag payload shape, and publish matching priority.
 - Prefer these low-blast-radius approaches first: add one tool at a time and keep shared client changes minimal.
 - Escalate or pause when these unknowns remain unresolved: Dify runtime packaging behavior, BookStack API payload shape, or Marketplace readiness requirements.
 
@@ -103,12 +111,11 @@ Capture rules that appear to shape behavior even if they are not yet formalized 
 
 - What exact local command should become the default validation command for the existing unit tests?
 - Which Dify plugin runtime version should be used for the first package smoke test?
-- What normalized response shape should later Phase 2 BookStack tools return?
 
 ## Target-State Contrast (Optional)
 
 - Related target doc: `docs/target/architecture-intent.md`.
-- Why current state differs from target: the repository now has the core Tool plugin MVP; support tools, later enhancement work, and the Datasource direction remain planned work.
+- Why current state differs from target: the repository now has the core Tool plugin MVP and Phase 2 enhancement tools; Datasource direction remains planned work.
 
 ## Maintenance Notes
 

@@ -2,6 +2,7 @@
 
 - **Priority:** P2
 - **Type:** Tool
+- **Status:** Implemented
 
 ## Background
 
@@ -18,6 +19,12 @@ Add a tool that lists shelves.
 ## Acceptance Criteria
 
 - Shelves can be listed with normalized output.
+
+## Completion Notes
+
+- Implemented as `list_shelves` using `GET /api/shelves`.
+- Supports optional `count` and `offset` pagination parameters.
+- Docker BookStack smoke validation confirmed the endpoint returns HTTP 200 and `data`/`total` list shape in the local environment.
 
 ## Risk
 

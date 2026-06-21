@@ -6,9 +6,9 @@ identity:
     zh_Hans: 发布页面
 description:
   human:
-    en_US: Create or update a BookStack page by page ID or safe exact title match.
-    zh_Hans: 通过页面 ID 或安全的精确标题匹配创建或更新 BookStack 页面。
-  llm: Create or update a BookStack page by page ID or safe exact title match.
+    en_US: Create or update a BookStack page by page ID, doc_id tag, path, or safe exact title match.
+    zh_Hans: 通过页面 ID、doc_id 标签、路径或安全的精确标题匹配创建或更新 BookStack 页面。
+  llm: Create or update a BookStack page by page ID, doc_id tag, path, or safe exact title match.
 parameters:
   - name: title
     type: string
@@ -17,9 +17,9 @@ parameters:
       en_US: Title
       zh_Hans: 标题
     human_description:
-      en_US: Page title used for creation and exact-title matching when page_id is not provided.
-      zh_Hans: 页面标题；未提供 page_id 时用于创建和精确标题匹配。
-    llm_description: Page title used for creation and exact-title matching when page_id is not provided.
+      en_US: Page title used for creation and final exact-title fallback matching when page_id, doc_id, and path do not resolve a unique page.
+      zh_Hans: 页面标题；当 page_id、doc_id 和 path 都未唯一定位页面时，用于创建和最终的精确标题回退匹配。
+    llm_description: Page title used for creation and final exact-title fallback matching when page_id, doc_id, and path do not resolve a unique page.
     form: llm
   - name: markdown
     type: string
@@ -43,6 +43,28 @@ parameters:
       zh_Hans: 可选的 BookStack 页面 ID；提供后将更新该指定页面。
     llm_description: Optional BookStack page ID. When provided, publish_page updates this exact page.
     form: llm
+  - name: doc_id
+    type: string
+    required: false
+    label:
+      en_US: Document ID Tag
+      zh_Hans: 文档 ID 标签
+    human_description:
+      en_US: Optional stable document identifier matched against a page tag named doc_id before path or title matching.
+      zh_Hans: 可选的稳定文档标识；会先按名为 doc_id 的页面标签匹配，再回退到路径或标题匹配。
+    llm_description: Optional stable document identifier matched against a page tag named doc_id before path or title matching.
+    form: llm
+  - name: path
+    type: string
+    required: false
+    label:
+      en_US: Path
+      zh_Hans: 路径
+    human_description:
+      en_US: Optional normalized page path matched after doc_id and before exact title. Leading and trailing slashes are ignored.
+      zh_Hans: 可选页面路径；在 doc_id 之后、精确标题之前进行标准化匹配，并忽略首尾斜杠。
+    llm_description: Optional normalized page path matched after doc_id and before exact title. Leading and trailing slashes are ignored.
+    form: llm
   - name: tags
     type: string
     required: false
@@ -50,9 +72,9 @@ parameters:
       en_US: Tags
       zh_Hans: 标签
     human_description:
-      en_US: Optional tag text or list-like value forwarded as simple tags.
-      zh_Hans: 可选标签文本或列表式值，将作为简单标签传递。
-    llm_description: Optional tags for the published page.
+      en_US: Optional tags as text, name:value strings, or structured tag objects. A doc_id tag is added automatically when doc_id is provided unless already present.
+      zh_Hans: 可选标签，可使用文本、name:value 字符串或结构化标签对象；当提供 doc_id 且标签中尚不存在 doc_id 时，会自动补充该标签。
+    llm_description: Optional tags as text, name:value strings, or structured tag objects. A doc_id tag is added automatically when doc_id is provided unless already present.
     form: llm
   - name: book_id
     type: string

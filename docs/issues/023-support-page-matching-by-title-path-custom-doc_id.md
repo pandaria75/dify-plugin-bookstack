@@ -2,6 +2,7 @@
 
 - **Priority:** P2
 - **Type:** Tool Logic
+- **Status:** Implemented
 
 ## Background
 
@@ -13,13 +14,19 @@ Expand `publish_page` matching strategies.
 
 ## Implementation Suggestion
 
-- Support title matching.
-- Support path matching.
-- Leave room for custom document IDs later.
+- Support exact title matching.
+- Support normalized path matching.
+- Support custom document IDs through a `doc_id` page tag.
 
 ## Acceptance Criteria
 
 - Matching strategy is configurable and documented.
+
+## Completion Notes
+
+- `publish_page` matching order is `page_id`, then `doc_id`, then `path`, then exact title fallback.
+- Ambiguous matches fail safely instead of updating an arbitrary page.
+- When `doc_id` is provided, `publish_page` adds a `doc_id` tag unless one is already present.
 
 ## Risk
 

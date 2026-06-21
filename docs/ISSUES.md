@@ -32,10 +32,10 @@ The repository keeps the issue plan in Markdown so the roadmap is always visible
 | #017 | Add CI for lint and tests | P1 | CI | Pull requests run unit tests and selected static checks. |
 | #018 | Add GitHub issue templates | P1 | Repository Maintenance | Bug, feature, and question issue templates exist. |
 | #019 | Add Marketplace release checklist | P1 | Documentation | Marketplace checklist covers manifest, README, privacy, icon, version, packaging, import, and release flow. |
-| #020 | Implement list_shelves tool | P2 | Tool | Tool lists shelves with normalized output. |
-| #021 | Implement list_pages tool | P2 | Tool | Tool lists pages with stable metadata and pagination plan. |
-| #022 | Support tags mapping more completely | P2 | Data Mapping | Tag inputs and outputs are deterministic and documented. |
-| #023 | Support page matching by title/path/custom doc_id | P2 | Tool Logic | `publish_page` supports documented matching strategies. |
+| #020 | Implement list_shelves tool | P2 | Tool | Implemented: tool lists shelves with normalized output. |
+| #021 | Implement list_pages tool | P2 | Tool | Implemented: tool lists pages with stable metadata and `count`/`offset` pagination. |
+| #022 | Support tags mapping more completely | P2 | Data Mapping | Implemented: tag inputs normalize deterministically to BookStack tag objects. |
+| #023 | Support page matching by title/path/custom doc_id | P2 | Tool Logic | Implemented: `publish_page` supports `page_id`, `doc_id`, `path`, and exact-title matching strategies. |
 | #024 | Add Datasource plugin design document | P2 | Design | Datasource design covers sync scopes and metadata mapping. |
 | #025 | Implement BookStack datasource MVP | P2 | Datasource | A narrow BookStack sync path works through Dify Datasource behavior. |
 | #026 | Add sync range by Book | P2 | Datasource | Book-scoped sync is supported and documented. |

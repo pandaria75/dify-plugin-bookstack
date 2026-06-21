@@ -16,8 +16,10 @@ The current Tool plugin MVP includes these implemented tools:
 - `publish_page`
 - `list_books`
 - `list_chapters`
+- `list_shelves`
+- `list_pages`
 
-Datasource support and later enhancement tools remain planned work.
+Datasource support remains planned work.
 
 ## Dify CLI Preparation
 
@@ -129,9 +131,10 @@ Useful follow-up checks:
 
 1. Keep the implemented Phase 1 core tools stable: `search_pages`, `get_page`, `create_page`, `update_page`, and `publish_page`.
 2. Keep the implemented Phase 1 support tools stable: `list_books` and `list_chapters`.
-3. Expand unit tests for client behavior, payload mapping, and packaging-adjacent checks as coverage grows.
-4. Capture the first successful Dify package import and smoke-test evidence in docs.
-5. Expand into Phase 2, then Phase 3, then Marketplace preparation.
+3. Keep the implemented Phase 2 enhancement tools stable: `list_shelves`, `list_pages`, deterministic tag mapping, and safer `publish_page` matching.
+4. Expand unit tests for client behavior, payload mapping, and packaging-adjacent checks as coverage grows.
+5. Capture the first successful Dify package import and smoke-test evidence in docs.
+6. Expand into Phase 3 Datasource design, then Marketplace preparation.
 
 ## Safety Rules
 

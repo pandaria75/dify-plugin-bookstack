@@ -212,6 +212,44 @@ class BookStackClient:
 
         return payload
 
+    def list_shelves(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
+        params: dict[str, Any] = {}
+        if count is not None:
+            params["count"] = count
+        if offset is not None:
+            params["offset"] = offset
+
+        request_kwargs: dict[str, Any] = {}
+        if params:
+            request_kwargs["params"] = params
+
+        payload = self._request("GET", "shelves", **request_kwargs)
+        data = payload.get("data")
+
+        if not isinstance(data, list):
+            raise InvalidResponseError("Invalid BookStack response")
+
+        return payload
+
+    def list_pages(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
+        params: dict[str, Any] = {}
+        if count is not None:
+            params["count"] = count
+        if offset is not None:
+            params["offset"] = offset
+
+        request_kwargs: dict[str, Any] = {}
+        if params:
+            request_kwargs["params"] = params
+
+        payload = self._request("GET", "pages", **request_kwargs)
+        data = payload.get("data")
+
+        if not isinstance(data, list):
+            raise InvalidResponseError("Invalid BookStack response")
+
+        return payload
+
     def list_chapters(
         self,
         book_id: Any | None = None,

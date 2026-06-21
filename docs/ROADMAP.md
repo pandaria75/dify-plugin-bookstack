@@ -32,10 +32,10 @@
 
 ## Phase 2: Enhanced Tool Coverage
 
-- Implement `list_shelves`.
-- Implement `list_pages`.
-- Improve tag mapping.
-- Improve page matching strategies.
+- Implemented: `list_shelves`.
+- Implemented: `list_pages`.
+- Implemented: deterministic tag mapping.
+- Implemented: page matching by title, path, and doc_id.
 - Keep delete or archive operations disabled by default.
 
 ## Phase 3: Datasource Plugin

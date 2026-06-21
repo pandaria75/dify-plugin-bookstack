@@ -33,7 +33,7 @@ class UpdatePageClientTestCase(unittest.TestCase):
                 "42",
                 title="Updated Title",
                 markdown="# Updated",
-                tags=["ops"],
+                tags=[{"name": "ops", "value": ""}],
                 book_id="7",
                 chapter_id="11",
             )
@@ -44,7 +44,7 @@ class UpdatePageClientTestCase(unittest.TestCase):
             json={
                 "name": "Updated Title",
                 "markdown": "# Updated",
-                "tags": ["ops"],
+                "tags": [{"name": "ops", "value": ""}],
                 "book_id": "7",
                 "chapter_id": "11",
             },

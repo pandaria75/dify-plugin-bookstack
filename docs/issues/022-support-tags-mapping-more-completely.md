@@ -2,6 +2,7 @@
 
 - **Priority:** P2
 - **Type:** Data Mapping
+- **Status:** Implemented
 
 ## Background
 
@@ -19,6 +20,12 @@ Expand tag handling so it maps consistently from Dify inputs to BookStack output
 ## Acceptance Criteria
 
 - Tag handling is documented and deterministic.
+
+## Completion Notes
+
+- Tag inputs normalize to BookStack-style objects with `name` and `value` fields.
+- `name:value` strings are supported for compatibility; structured tag objects are preferred when delimiter ambiguity matters.
+- Empty tag names are ignored and tag order is preserved.
 
 ## Risk
 

@@ -33,7 +33,7 @@ class CreatePageClientTestCase(unittest.TestCase):
             result = client.create_page(
                 title="Ops Runbook",
                 markdown="# Runbook",
-                tags=["ops", "runbook"],
+                tags=[{"name": "ops", "value": ""}, {"name": "runbook", "value": ""}],
                 book_id="7",
             )
 
@@ -43,7 +43,7 @@ class CreatePageClientTestCase(unittest.TestCase):
             json={
                 "name": "Ops Runbook",
                 "markdown": "# Runbook",
-                "tags": ["ops", "runbook"],
+                "tags": [{"name": "ops", "value": ""}, {"name": "runbook", "value": ""}],
                 "book_id": "7",
             },
             not_found_error=BookNotFoundError,
