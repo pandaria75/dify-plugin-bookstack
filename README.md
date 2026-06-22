@@ -1,6 +1,6 @@
 # BookStack
 
-BookStack is a Dify plugin for publishing, reading, and syncing BookStack pages.
+BookStack is a Dify plugin project for publishing, reading, and narrowly syncing BookStack pages.
 
 This repository is in active development. The current goal is to stabilize the BookStack Tool plugin MVP, document the architecture, and keep the implementation and docs aligned as Phase 1 tools land.
 
@@ -14,12 +14,12 @@ This repository is in active development. The current goal is to stabilize the B
 
 - Tool plugin for BookStack read/write operations.
 - Credential-based access through Dify plugin configuration.
-- Clear roadmap for future Datasource support.
+- Separate Page-only Datasource MVP package for early sync experiments.
 - Documented API mapping and implementation boundaries.
 
 ## Supported Tools
 
-Current implemented Phase 1 tool set:
+Current implemented tool set:
 
 - `validate_credentials`
 - `search_pages`
@@ -29,9 +29,11 @@ Current implemented Phase 1 tool set:
 - `publish_page`
 - `list_books`
 - `list_chapters`
+- `list_shelves`
+- `list_pages`
 
 - All tools listed above are implemented in the current repository.
-- Later enhancement tools and Datasource support remain planned work.
+- A separate Datasource MVP package also exists for one `page_id`, while broader Datasource scopes remain planned work.
 
 ## Installation
 
@@ -62,7 +64,7 @@ See `docs/examples/workflow-publish-page.md` for an example publish flow built a
 
 Current status: active development.
 
-The repository currently contains the project skeleton, design notes, issue breakdown, the shared client, and the implemented Phase 1 BookStack tools. Later enhancement tools and Datasource work remain planned.
+The repository currently contains the project skeleton, design notes, issue breakdown, the shared client, the implemented BookStack tools, and a separate Page-only Datasource MVP package. Real SDK import, daemon source-root checks, live Page-only Datasource smoke against temporary BookStack content, and Dify UI plugin installation all pass in local validation. Release-readiness still needs one follow-up run with normal signature verification restored.
 
 ## Roadmap
 

@@ -1,0 +1,56 @@
+identity:
+  author: gaohaoyv
+  name: bookstack_datasource
+  label:
+    en_US: BookStack Datasource
+    zh_Hans: BookStack 数据源
+  description:
+    en_US: Separate BookStack datasource provider skeleton for Dify.
+    zh_Hans: 独立的 BookStack Dify 数据源提供者骨架。
+  icon: icon.svg
+provider_type: online_document
+credentials_schema:
+  - name: base_url
+    type: text-input
+    required: true
+    label:
+      en_US: Base URL
+      zh_Hans: 基础地址
+    placeholder:
+      en_US: https://docs.example.com
+      zh_Hans: https://docs.example.com
+  - name: token_id
+    type: secret-input
+    required: true
+    label:
+      en_US: Token ID
+      zh_Hans: Token ID
+    placeholder:
+      en_US: BookStack API token id
+      zh_Hans: BookStack API token id
+  - name: token_secret
+    type: secret-input
+    required: true
+    label:
+      en_US: Token Secret
+      zh_Hans: Token Secret
+    placeholder:
+      en_US: BookStack API token secret
+      zh_Hans: BookStack API token secret
+  - name: timeout_seconds
+    type: text-input
+    required: false
+    label:
+      en_US: Timeout Seconds
+      zh_Hans: 超时时间（秒）
+  - name: verify_ssl
+    type: boolean
+    required: false
+    label:
+      en_US: Verify SSL
+      zh_Hans: 验证 SSL
+datasources:
+  - datasources/bookstack_page.yaml
+extra:
+  python:
+    source: provider/bookstack_datasource.py

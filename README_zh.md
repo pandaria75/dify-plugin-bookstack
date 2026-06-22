@@ -30,12 +30,15 @@
 - `publish_page`
 - `list_books`
 - `list_chapters`
+- 独立 Datasource 包中的 Page-only MVP（单个 `page_id`）
 - 基础单元测试覆盖（共享客户端与页面参数/载荷映射）
 
 后续计划实现：
 
-- Datasource 同步能力
 - 更丰富的工具增强能力（例如更安全的页面匹配与扩展查询）
+- Book / Chapter 等更大范围的 Datasource 同步能力
+
+说明：当前 Datasource 仍是一个范围受限的 MVP，实现位于独立的 `bookstack_datasource/` 包中；真实 SDK import、daemon source-root 检查、基于临时 BookStack 内容的 live Page-only Datasource smoke，以及 Dify UI 中的插件安装均已通过。发布就绪前仍建议在恢复正常签名校验后再做一次验证。
 
 ## 开发路线图
 
@@ -47,4 +50,4 @@
 
 ## 后续计划
 
-优先稳定当前已实现的 Phase 1 工具集，补充更多验证与打包导入证据，然后再推进增强工具与 Datasource 设计。
+优先稳定当前已实现的 Phase 1 工具集与 Page-only Datasource MVP，补充更多验证与打包导入证据，然后再推进增强工具与更大范围的 Datasource 同步。

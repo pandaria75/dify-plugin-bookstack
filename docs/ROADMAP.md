@@ -9,7 +9,7 @@
 5. Phase 1 support tools: `list_books`, `list_chapters`.
 6. Phase 1 verification: unit tests and payload mapping.
 7. Phase 2 enhancement tools and safer page matching.
-8. Phase 3 Datasource design and implementation.
+8. Phase 3 Datasource MVP and follow-up sync scopes.
 9. Phase 4 Marketplace readiness.
 
 ## Phase 0: Project Initialization and Research
@@ -40,13 +40,17 @@
 
 ## Phase 3: Datasource Plugin
 
-- Design the Datasource plugin.
-- Support sync by Book, Chapter, and Page.
-- Add metadata mapping for Knowledge Pipeline.
-- Plan shelf and full-site sync later.
+- Implemented: separate `bookstack_datasource/` package skeleton for Dify Datasource.
+- Implemented: Page-only Datasource MVP runtime for one `page_id`.
+- Implemented: minimal content and metadata mapping for the current verified shape.
+- Implemented: `#031` deterministic shared-client sync/check workflow; root `bookstack_client.py` stays canonical and the Datasource copy remains a generated Page-only subset.
+- Remaining: real plugin-load and SDK runtime validation in Dify.
+- Planned later: Book, Chapter, Shelf, and full-site sync scopes after `#031` is complete and validated.
+- Planned later: broader metadata stabilization once real runtime behavior is rechecked.
 
 ## Phase 4: Marketplace Readiness
 
+- Start release-readiness only after the planned issue sequence is complete; current preference is to release after all tracked issues are finished.
 - Keep the English README, privacy policy, manifest, and icon aligned for Marketplace readiness.
 - Capture practical packaging, import, and smoke-check evidence.
 - Prepare icon and usage examples suitable for release packaging.
