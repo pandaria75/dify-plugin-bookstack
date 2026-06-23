@@ -67,14 +67,14 @@ class BookStackClientSyncTestCase(unittest.TestCase):
             "_session",
             "_request",
             "validate_credentials",
+            "list_pages",
+            "list_chapters",
             "get_page",
         }
         excluded_methods = {
             "search_pages",
             "list_books",
             "list_shelves",
-            "list_pages",
-            "list_chapters",
             "_build_page_payload",
             "create_page",
             "update_page",

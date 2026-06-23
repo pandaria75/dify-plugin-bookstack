@@ -41,12 +41,14 @@
 ## Phase 3: Datasource Plugin
 
 - Implemented: separate `bookstack_datasource/` package skeleton for Dify Datasource.
-- Implemented: Page-only Datasource MVP runtime for one `page_id`.
-- Implemented: minimal content and metadata mapping for the current verified shape.
-- Implemented: `#031` deterministic shared-client sync/check workflow; root `bookstack_client.py` stays canonical and the Datasource copy remains a generated Page-only subset.
-- Remaining: real plugin-load and SDK runtime validation in Dify.
-- Planned later: Book, Chapter, Shelf, and full-site sync scopes after `#031` is complete and validated.
-- Planned later: broader metadata stabilization once real runtime behavior is rechecked.
+- Implemented: Page Datasource runtime for one `page_id`.
+- Implemented: Chapter Datasource runtime for one `chapter_id`, emitting page-level sync units.
+- Implemented: Book Datasource runtime for one `book_id`, emitting page-level sync units with pagination safeguards.
+- Implemented: stable metadata mapping for Page/Chapter/Book Datasource output, including fixed source/scope/id fields and nullable metadata preservation where practical.
+- Implemented: `#031` deterministic shared-client sync/check workflow; root `bookstack_client.py` stays canonical and the Datasource copy remains a generated read/traversal subset.
+- Verified on 2026-06-22 by automated regression (sync-check, unit-test discovery, and compileall), successful Datasource repackaging, successful BookStack API credentialed connectivity, successful Dify base/system-features endpoint reachability, and successful browser sign-in to the local Dify console when using a valid login email.
+- Remaining: real installed Dify runtime content smoke for the expanded Datasource package still needs credential authorization plus Page/Chapter/Book retrieval checks from within Dify. The installed runtime now recognizes all three datasource scopes and their expanded metadata declarations.
+- Planned later: Shelf and full-site sync scopes.
 
 ## Phase 4: Marketplace Readiness
 

@@ -1,24 +1,24 @@
 identity:
   author: gaohaoyv
-  name: bookstack_page
+  name: bookstack_book
   label:
-    en_US: BookStack Page
-    zh_Hans: BookStack 页面
+    en_US: BookStack Book
+    zh_Hans: BookStack 图书
 description:
-  en_US: Page-only BookStack online-document datasource.
-  zh_Hans: 仅页面范围的 BookStack 在线文档数据源。
+  en_US: Book-scoped BookStack online-document datasource.
+  zh_Hans: 图书范围的 BookStack 在线文档数据源。
 provider_type: online_document
 parameters:
-  - name: page_id
+  - name: book_id
     type: string
     required: true
     form: llm
     label:
-      en_US: Page ID
-      zh_Hans: 页面 ID
+      en_US: Book ID
+      zh_Hans: 图书 ID
     description:
-      en_US: BookStack page identifier for the current Page-only MVP sync path.
-      zh_Hans: 当前 Page-only MVP 同步路径使用的 BookStack 页面标识。
+      en_US: BookStack book identifier used to sync pages under the selected book.
+      zh_Hans: 用于同步所选图书下页面的 BookStack 图书标识。
 output_schema:
   type: object
   properties:
@@ -48,7 +48,7 @@ output_schema:
     parent_id:
       type: string
       nullable: true
-      description: Parent chapter or book identifier when available
+      description: Parent chapter or book identifier for the synced page
     title:
       type: string
       description: BookStack page title
@@ -82,4 +82,4 @@ output_schema:
       description: BookStack page source URL
 extra:
   python:
-    source: datasources/bookstack_page.py
+    source: datasources/bookstack_book.py

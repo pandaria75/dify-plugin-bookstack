@@ -161,6 +161,23 @@ class BookStackClientTestCase(unittest.TestCase):
             with self.assertRaisesRegex(BookNotFoundError, "Book not found"):
                 client.list_chapters(book_id="7")
 
+    def test_list_pages_passes_traversal_filters_and_pagination(self):
+        response = FakeResponse(200, content=b'{"data": []}', json_value={"data": []})
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            payload = client.list_pages(book_id="7", chapter_id="11", count=100, offset=200)
+
+        self.assertEqual(payload, {"data": []})
+        fake_session.request.assert_called_once_with(
+            method="GET",
+            url="https://example.test/api/pages",
+            timeout=10.0,
+            verify=True,
+            params={"book_id": "7", "chapter_id": "11", "count": 100, "offset": 200},
+        )
+
     def test_create_page_404_uses_book_or_chapter_specific_not_found(self):
         client = BookStackClient("https://example.test", "id", "secret")
 

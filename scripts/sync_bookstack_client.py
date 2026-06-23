@@ -34,6 +34,8 @@ CLIENT_METHODS = [
     "_session",
     "_request",
     "validate_credentials",
+    "list_pages",
+    "list_chapters",
     "get_page",
 ]
 

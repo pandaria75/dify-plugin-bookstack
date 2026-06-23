@@ -22,8 +22,15 @@ The current Tool plugin MVP includes these implemented tools:
 Datasource status is now split:
 
 - The root plugin remains the implemented Tool plugin.
-- A separate `bookstack_datasource/` package now contains a narrow Page-only Datasource MVP for one `page_id`.
-- Local Dify UI package upload/install validation for that Datasource package has passed after temporarily disabling local signature enforcement, then restoring it. Release-readiness still needs a trusted/official signing path with normal signature verification enabled.
+- A separate `bookstack_datasource/` package now contains implemented Page, Chapter, and Book Datasource entries for BookStack sync.
+- Stable Datasource metadata now covers fixed `source` / `sync_scope` / `sync_source_id` fields plus BookStack page, chapter, book, URL, tags, timestamp, and content-format fields with `null` where the source payload omits values.
+- Local Dify UI package upload/install validation has previously passed for the earlier Page-only Datasource package after temporarily disabling local signature enforcement, then restoring it. Release-readiness still needs a trusted/official signing path with normal signature verification enabled.
+- On 2026-06-22, required automated validation for the expanded Datasource package passed: generated-client sync check, `python3 -m unittest discover -s tests -p 'test_*.py'` (99 tests, 1 skipped), and `python3 -m compileall bookstack_datasource scripts tests`.
+- On 2026-06-22, additional local validation also confirmed: BookStack `/api/system` responds successfully with configured credentials, the local Dify base URL and unauthenticated `system-features` endpoint respond successfully, `dify plugin package bookstack_datasource --output_path dist/bookstack_datasource-0.0.1.difypkg` succeeds, and browser automation can sign in to the local Dify console when given a valid login email.
+- Expanded Datasource installation was advanced further in the local Docker Dify environment on 2026-06-22: after temporarily disabling local signature enforcement, uploading the refreshed package through the Dify plugins UI completed successfully, and the installed-plugin datasource API now exposes `bookstack_page`, `bookstack_chapter`, and `bookstack_book` entries.
+- The installed Dify datasource declaration now also preserves the expanded nullable metadata fields and list-form `tags` schema in the runtime API output.
+- Local signature enforcement was then restored to its original enabled state after the validation attempt.
+- Remaining live-runtime gap: credential authorization plus real Page/Chapter/Book content retrieval smoke in the installed Dify runtime still has not been completed, so end-to-end content execution against a configured BookStack datasource remains a follow-up validation item.
 
 ## Dify CLI Preparation
 
@@ -64,12 +71,12 @@ Current repository-specific packaging assumptions:
 - `provider/bookstack.yaml` is the registered provider entry.
 - Tool and provider Python sources use repository-relative paths.
 
-Current Datasource MVP packaging notes:
+Current Datasource packaging notes:
 
 - `bookstack_datasource/manifest.yaml` defines a separate Datasource package because Tool + Datasource single-package coexistence remains unverified.
-- `bookstack_datasource/` currently supports only the Page-only MVP path for one `page_id`.
+- `bookstack_datasource/` now supports three read-only Datasource scopes: `bookstack_page` for one `page_id`, `bookstack_chapter` for a `chapter_id`, and `bookstack_book` for a `book_id`.
 - Root `bookstack_client.py` is the canonical shared client source for this repository.
-- `bookstack_datasource/bookstack_client.py` is not manually mirrored anymore. It is a deterministic generated Page-only subset used for Datasource package-local runtime isolation.
+- `bookstack_datasource/bookstack_client.py` is not manually mirrored anymore. It is a deterministic generated read/traversal subset used for Datasource package-local runtime isolation.
 - Run `python3 scripts/sync_bookstack_client.py` to regenerate the Datasource copy after canonical client changes.
 - Run `python3 scripts/sync_bookstack_client.py --check` to fail fast on drift before packaging or review.
 - Relevant validation commands for the shared-client workflow are:
@@ -80,8 +87,9 @@ Current Datasource MVP packaging notes:
 - This generated-copy workflow was chosen for the current release cycle instead of a shared wheel/package because the repo does not yet have internal Python package infrastructure and Dify plugin source-root separation is already a packaging boundary risk.
 - SDK import and daemon source-root import checks pass for the separate Datasource package.
 - The Dify plugin CLI can package the Datasource package into `dist/bookstack_datasource-0.0.1.difypkg`.
-- Full Dify UI login and Datasource plugin installation pass after providing a valid login email and temporarily disabling local signature enforcement in the Docker Dify environment.
-- Live BookStack credential validation and Page-only Datasource smoke pass in the local Docker-backed environment using temporary BookStack test content that is cleaned up after validation.
+- Full Dify UI login and Datasource plugin installation previously passed for the earlier Page-only package after providing a valid login email and temporarily disabling local signature enforcement in the Docker Dify environment.
+- Live BookStack credential validation and Page-only Datasource smoke previously passed in the local Docker-backed environment using temporary BookStack test content that is cleaned up after validation.
+- Expanded Page/Chapter/Book live Datasource smoke remains a follow-up validation item for the current broader Datasource runtime.
 - The packaged Datasource plugin appears in the Dify Plugins UI as `BookStack 数据源` / `bookstack_datasource` after installation.
 
 Recommended longer-term client-sharing options, in preferred order:
@@ -164,11 +172,11 @@ Useful follow-up checks:
 1. Keep the implemented Phase 1 core tools stable: `search_pages`, `get_page`, `create_page`, `update_page`, and `publish_page`.
 2. Keep the implemented Phase 1 support tools stable: `list_books` and `list_chapters`.
 3. Keep the implemented Phase 2 enhancement tools stable: `list_shelves`, `list_pages`, deterministic tag mapping, and safer `publish_page` matching.
-4. Restore normal signature verification and repeat the UI package install check before treating the Datasource package as release-ready.
-5. Expand unit tests for client behavior, payload mapping, and packaging-adjacent checks as coverage grows.
-6. Keep `#31` complete before starting broader Datasource sync issues such as `#26` and `#27` so the shared client does not drift again.
-7. Expand into later Datasource scopes only after the Page-only MVP runtime evidence remains stable under the selected release packaging/signature path.
-8. Prefer release work only after the planned issue sequence is complete; this repository currently prefers releasing after all tracked issues are finished rather than treating the current Datasource MVP as release-ready.
+4. Run a real Dify Datasource package install and Page/Chapter/Book smoke pass to confirm nullable metadata fields and list-form `tags` work in the live runtime.
+5. Restore normal signature verification and repeat the UI package install check before treating the Datasource package as release-ready.
+6. Expand unit tests for client behavior, payload mapping, and packaging-adjacent checks as coverage grows.
+7. Track the low-probability edge case where a malformed page payload without an id can yield an empty `sync_source_id`.
+8. Prefer release work only after the planned issue sequence is complete; this repository currently prefers releasing after all tracked issues are finished rather than treating the current Datasource package as release-ready.
 
 ## Safety Rules
 

@@ -51,6 +51,8 @@ credentials_schema:
       zh_Hans: 验证 SSL
 datasources:
   - datasources/bookstack_page.yaml
+  - datasources/bookstack_chapter.yaml
+  - datasources/bookstack_book.yaml
 extra:
   python:
     source: provider/bookstack_datasource.py

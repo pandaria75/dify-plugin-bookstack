@@ -231,8 +231,18 @@ class BookStackClient:
 
         return payload
 
-    def list_pages(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
+    def list_pages(
+        self,
+        book_id: Any | None = None,
+        chapter_id: Any | None = None,
+        count: Any | None = None,
+        offset: Any | None = None,
+    ) -> dict[str, Any]:
         params: dict[str, Any] = {}
+        if book_id is not None:
+            params["book_id"] = book_id
+        if chapter_id is not None:
+            params["chapter_id"] = chapter_id
         if count is not None:
             params["count"] = count
         if offset is not None:
