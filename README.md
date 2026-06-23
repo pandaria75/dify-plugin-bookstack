@@ -1,6 +1,6 @@
 # BookStack Plugin for Dify
 
-BookStack Plugin for Dify is a Tool-first integration that lets Dify connect to a BookStack instance for credential validation, page operations, and support listing tools.
+BookStack Plugin for Dify connects Dify workflows and agents to self-hosted BookStack knowledge bases. Dify handles AI content generation, approval, and orchestration; BookStack stores the published documentation as a source of truth. This plugin bridges the two, enabling automated document publishing, reading, and synchronization from within Dify AI applications.
 
 ## Current implemented features
 
