@@ -71,12 +71,14 @@ If the current state is unclear, document the uncertainty as an unknown instead 
 - Tags: dify-plugin, bookstack, tool-plugin, credentials, api-mapping, datasource-later
 - Docs:
   - Current: `docs/current/system-map.md`
-  - Architecture: `docs/ARCHITECTURE.md`
-  - API Mapping: `docs/API_MAPPING.md`
+  - User docs: `docs/en/user/installation.md`, `docs/en/user/configuration.md`, `docs/en/user/tools.md`, `docs/en/user/examples.md`, `docs/en/user/troubleshooting.md`, `docs/en/user/datasource.md`
+  - Developer docs: `docs/en/developer/architecture.md`, `docs/en/developer/api-mapping.md`, `docs/en/developer/development.md`
+  - Legacy compatibility docs: `docs/ARCHITECTURE.md` and `docs/API_MAPPING.md` remain as superseded legacy entry points for the moved developer content
   - Marketplace: `docs/MARKETPLACE.md`
   - Target: `docs/target/architecture-intent.md`
   - Target: `docs/target/datasource-design.md`
-  - Planning: `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, `docs/ISSUES.md`
+  - Planning: `docs/en/project/roadmap.md`, `docs/en/project/decisions.md`
+  - Legacy summaries: `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, `docs/ISSUES.md`
 - Rules:
   - `AGENTS.md`
   - `.aiassistant/rules/00-repository-rules.md`
@@ -97,6 +99,29 @@ If the current state is unclear, document the uncertainty as an unknown instead 
   - tests should mock BookStack HTTP calls when tests exist
   - until tests exist, report validation as `NOT_RUN` with the reason instead of inventing live BookStack checks
   - re-check README and roadmap wording so planned tools are not described as available
+
+## Documentation Structure Routing
+
+- Areas: Marketplace-facing entry docs, user guidance, developer guidance, project planning/navigation
+- Tags: docs-routing, marketplace, navigation
+- Docs:
+  - Entry README: `README.md`
+  - Chinese README: `readme/README_zh_Hans.md`
+  - User docs: `docs/en/user/`, `docs/zh/user/`
+  - Developer docs: `docs/en/developer/`, `docs/zh/developer/`
+  - Project docs: `docs/project/`
+  - Marketplace/privacy: `docs/MARKETPLACE.md`, `PRIVACY.md`
+  - Legacy compatibility docs: `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, `docs/ISSUES.md`, `docs/ARCHITECTURE.md`, `docs/API_MAPPING.md`
+- Read When:
+  - updating Marketplace-facing documentation or support links
+  - moving or renaming docs
+  - checking whether privacy wording still matches user-facing setup and usage docs
+- Boundaries:
+  - keep `README.md` concise and English-only
+  - keep Tool-first, Datasource-later positioning
+  - do not describe packaging or Marketplace submission as completed unless evidence exists
+  - update `docs/MARKETPLACE.md` and `PRIVACY.md` together when Marketplace-facing disclosures change
+  - when docs are moved, keep legacy compatibility docs or redirect notes discoverable in this map until they are intentionally removed
 
 ## Knowledge Maturity Routing
 

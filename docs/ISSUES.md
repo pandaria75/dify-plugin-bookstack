@@ -1,5 +1,7 @@
 # Issues
 
+> Navigation note: the current durable project-planning docs live under [`docs/en/project/`](en/project/). This file remains the compatibility issue-plan ledger.
+
 The repository keeps the issue plan in Markdown so the roadmap is always visible even before GitHub issue creation is complete.
 
 ## Recommended Issue Order

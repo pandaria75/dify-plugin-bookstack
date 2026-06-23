@@ -1,5 +1,7 @@
 # Roadmap
 
+> Navigation note: the current project-planning summary lives in [`docs/en/project/roadmap.md`](en/project/roadmap.md). This legacy file is retained as a compatibility summary.
+
 ## Recommended Development Order
 
 1. Phase 0: Project initialization and research.

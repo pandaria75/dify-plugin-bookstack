@@ -1,25 +1,10 @@
-# BookStack
+# BookStack Plugin for Dify
 
-BookStack is a Dify plugin project for publishing, reading, and narrowly syncing BookStack pages.
+BookStack Plugin for Dify is a Tool-first integration that lets Dify connect to a BookStack instance for credential validation, page operations, and support listing tools.
 
-This repository is in active development. The current goal is to stabilize the BookStack Tool plugin MVP, document the architecture, and keep the implementation and docs aligned as Phase 1 tools land.
+## Current implemented features
 
-## Why BookStack + Dify
-
-- Dify handles AI workflow orchestration, approvals, and agent execution.
-- BookStack stores formal source documentation in a structured, open-source knowledge base.
-- Together they support a documentation pipeline from draft generation to published source docs.
-
-## Features
-
-- Tool plugin for BookStack read/write operations.
-- Credential-based access through Dify plugin configuration.
-- Separate Page-only Datasource MVP package for early sync experiments.
-- Documented API mapping and implementation boundaries.
-
-## Supported Tools
-
-Current implemented tool set:
+Implemented Dify Tool plugin features:
 
 - `validate_credentials`
 - `search_pages`
@@ -32,44 +17,53 @@ Current implemented tool set:
 - `list_shelves`
 - `list_pages`
 
-- All tools listed above are implemented in the current repository.
-- A separate Datasource MVP package also exists for one `page_id`, while broader Datasource scopes remain planned work.
+Current repository direction:
 
-## Installation
+- Tool plugin first
+- A separate Datasource package track exists in this repository, but it is not the primary Marketplace-facing path
+- Broader Datasource work remains planned
 
-This plugin follows the current Dify plugin structure described in the official documentation.
+## Setup
 
-1. Install the Dify plugin CLI if you want to package or debug locally.
-2. Configure your BookStack credentials in the Dify plugin UI.
-3. Package the plugin into a `.difypkg` file and import it into a Dify environment for local validation.
-4. See `docs/DEVELOPMENT.md` and `docs/MARKETPLACE.md` for version-sensitive CLI, packaging, and import guidance.
+1. Build or obtain the plugin package from this repository.
+2. Import it into a Dify environment that supports plugin installation.
+3. Open the BookStack provider settings in Dify.
+4. Enter your BookStack `base_url`, `token_id`, and `token_secret` in the Dify UI.
 
-## Configuration
+See:
 
-Configure the provider with these credential fields:
+- [Installation guide](docs/en/user/installation.md)
+- [Configuration guide](docs/en/user/configuration.md)
 
-- `base_url`
-- `token_id`
-- `token_secret`
-- `default_book_id` (optional)
-- `default_chapter_id` (optional)
-- `timeout_seconds` (optional)
-- `verify_ssl` (optional)
+## Usage
 
-## Example Workflow
+Recommended first step:
 
-See `docs/examples/workflow-publish-page.md` for an example publish flow built around the implemented `publish_page` tool.
+1. Save provider credentials.
+2. Run `validate_credentials`.
+3. Confirm the provider can reach the target BookStack instance.
+4. Use the implemented page and listing tools as needed, and refer to the linked user docs for details.
 
-## Development Status
+More information:
 
-Current status: active development.
+- [Implemented tools](docs/en/user/tools.md)
+- [Examples](docs/en/user/examples.md)
+- [Troubleshooting](docs/en/user/troubleshooting.md)
+- [Datasource status](docs/en/user/datasource.md)
 
-The repository currently contains the project skeleton, design notes, issue breakdown, the shared client, the implemented BookStack tools, and a separate Page-only Datasource MVP package. Real SDK import, daemon source-root checks, live Page-only Datasource smoke against temporary BookStack content, and Dify UI plugin installation all pass in local validation. Release-readiness still needs one follow-up run with normal signature verification restored.
+## Privacy
 
-## Roadmap
+The plugin uses credentials provided by the user and connects only to the configured BookStack instance through the Dify runtime.
 
-See `docs/ROADMAP.md` for the phase-by-phase plan.
+See the full [Privacy Policy](PRIVACY.md).
+
+## Repository and support
+
+- Repository: <https://github.com/pandaria75/dify-plugin-bookstack>
+- Issues / support: <https://github.com/pandaria75/dify-plugin-bookstack/issues>
+- Chinese README: [readme/README_zh_Hans.md](readme/README_zh_Hans.md)
+- Developer docs: [docs/en/developer/development.md](docs/en/developer/development.md)
 
 ## License
 
-MIT. See `LICENSE`.
+MIT. See [LICENSE](LICENSE).

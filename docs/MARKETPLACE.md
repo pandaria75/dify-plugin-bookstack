@@ -10,6 +10,7 @@ The near-term goal is to make this plugin straightforward to package, import, an
 - `manifest.yaml` currently uses `_assets/icon.svg` and registers `provider/bookstack.yaml`.
 - `README.md` is English-only.
 - `PRIVACY.md` exists and documents the current credential and data-handling posture.
+- User-facing documentation now routes through `README.md` plus `docs/user/`, while implementation and planning context live under `docs/developer/` and `docs/project/`.
 - This repository documents packaging and import guidance, but does not yet capture successful local packaging or Dify smoke-test evidence.
 - Treat all CLI command examples here as version-sensitive working assumptions until confirmed against the installed Dify CLI.
 
@@ -30,6 +31,7 @@ Work through this checklist before preparing any release artifact or Marketplace
 
 - Confirm `README.md` remains English-only.
 - Confirm `README.md` describes only implemented tools and clearly marks later work as planned.
+- Confirm links from `README.md` still point to the current `docs/user/` guidance.
 - Confirm installation guidance still points users to local packaging and import flow, not a finished Marketplace listing.
 - Confirm `PRIVACY.md` still matches actual plugin behavior and does not imply data sharing beyond Dify runtime plus the configured BookStack instance.
 - If Marketplace-facing behavior or disclosures changed, update `README.md` and `PRIVACY.md` together before release work continues.
@@ -138,4 +140,5 @@ Mark the packaging check as `NOT_RUN` when the Dify CLI is not installed locally
 
 - This repository does not currently claim a successful local Dify package build as recorded evidence.
 - This repository does not currently claim a successful Dify import smoke test as recorded evidence.
+- This repository does not currently claim official Marketplace submission, approval, or publication.
 - Revalidate the release flow against current Dify documentation before any public submission because Marketplace and CLI requirements may change.

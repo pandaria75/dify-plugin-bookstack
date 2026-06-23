@@ -1,5 +1,7 @@
 # Development Guide
 
+> Navigation note: the concise developer guide now lives at [`docs/en/developer/development.md`](en/developer/development.md). This legacy file is retained for deeper implementation and packaging detail.
+
 ## Local Development
 
 This repository currently uses a manually created plugin skeleton based on the official Dify documentation.

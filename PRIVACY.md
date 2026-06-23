@@ -10,4 +10,6 @@ The plugin does not intentionally send content to any third party other than the
 
 The plugin does not log `token_secret` values.
 
+This repository also contains separate documentation and planning material for packaging, Marketplace readiness, and Datasource follow-up work, but those docs do not change the current privacy posture described here.
+
 How page content is later used by Dify Workflow, Chatflow, Agent, or Knowledge features depends on the user’s own Dify configuration and data handling choices.
