@@ -14,9 +14,9 @@ When `harness.config.yaml` exists, read `knowledge.mode` and `knowledge.maturity
 
 - Knowledge Docs:
   - `docs/project/` for repository-wide workflow and routing
-  - `docs/project/tier-policy-workflow-design.md` for installed future-facing Tier-policy workflow research boundaries and roadmap context
   - `docs/current/` for current-state knowledge about how the project works today
   - `docs/target/` for desired future design, migration direction, or proposed architecture
+  - `docs/user/` for consolidated user-facing setup, usage, and disclosure guidance
 - Rule Files:
   - `AGENTS.md`
   - `.aiassistant/rules/*.md`
@@ -47,38 +47,29 @@ If the current state is unclear, document the uncertainty as an unknown instead 
 
 ## Project Workflow Design
 
-- Areas: harness task flow, Tier-based routing, gate boundaries, future workflow configurability
-- Tags: workflow, tier, gate-policy, task-state, research
+- Areas: harness task flow, routing, gate boundaries
+- Tags: workflow, gate-policy, task-state
 - Docs:
   - Current: `docs/project/harness-workflow.md`
-  - Target: `docs/project/tier-policy-workflow-design.md`
 - Rules:
   - `AGENTS.md`
 - Read When:
-  - working on harness execution flow, Tier policy, gate behavior, or future workflow design boundaries
+  - working on harness execution flow, task routing, or gate behavior
 - Boundaries:
   - keep `gatePolicy` semantics unchanged
-  - treat Tier policy as classification/workflow-hint logic until a later approved design says otherwise
-  - do not treat the design draft as implemented behavior
-  - use the design draft to understand deferred hardening and future-engine boundaries, not current execution rules
+  - treat harness workflow docs as current process guidance
 - Validation:
   - confirm project-neutral language
-  - confirm proposed workflow configurability remains design-only unless explicitly implemented in an approved slice
+  - confirm workflow guidance stays aligned with current harness-managed docs
 
 ## BookStack Plugin Design
 
-- Areas: Dify Tool plugin structure, BookStack API integration, provider credentials, tool roadmap, future Datasource direction
-- Tags: dify-plugin, bookstack, tool-plugin, credentials, api-mapping, datasource-later
+- Areas: Dify Tool plugin structure, BookStack API integration, provider credentials, Tool-first scope, future Datasource direction
+- Tags: dify-plugin, bookstack, tool-plugin, credentials, datasource-later
 - Docs:
   - Current: `docs/current/system-map.md`
-  - User docs: `docs/en/user/installation.md`, `docs/en/user/configuration.md`, `docs/en/user/tools.md`, `docs/en/user/examples.md`, `docs/en/user/troubleshooting.md`, `docs/en/user/datasource.md`
-  - Developer docs: `docs/en/developer/architecture.md`, `docs/en/developer/api-mapping.md`, `docs/en/developer/development.md`
-  - Legacy compatibility docs: `docs/ARCHITECTURE.md` and `docs/API_MAPPING.md` remain as superseded legacy entry points for the moved developer content
-  - Marketplace: `docs/MARKETPLACE.md`
+  - User docs: `docs/user/en/usage.md`, `docs/user/zh/usage.md`
   - Target: `docs/target/architecture-intent.md`
-  - Target: `docs/target/datasource-design.md`
-  - Planning: `docs/en/project/roadmap.md`, `docs/en/project/decisions.md`
-  - Legacy summaries: `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, `docs/ISSUES.md`
 - Rules:
   - `AGENTS.md`
   - `.aiassistant/rules/00-repository-rules.md`
@@ -87,8 +78,6 @@ If the current state is unclear, document the uncertainty as an unknown instead 
   - adding or changing BookStack tools
   - changing provider credentials, plugin YAML, icons, or Dify source references
   - changing `BookStackClient`, user-facing error terms, or API response mapping
-  - updating roadmap status for planned versus implemented functionality
-  - updating Marketplace readiness, packaging, import, or release-checklist guidance
   - designing Datasource behavior after Tool plugin behavior stabilizes
 - Boundaries:
   - treat `docs/current/system-map.md` as observed current behavior, not future intent
@@ -98,30 +87,26 @@ If the current state is unclear, document the uncertainty as an unknown instead 
 - Validation:
   - tests should mock BookStack HTTP calls when tests exist
   - until tests exist, report validation as `NOT_RUN` with the reason instead of inventing live BookStack checks
-  - re-check README and roadmap wording so planned tools are not described as available
+  - re-check README and usage-doc wording so planned tools are not described as available
 
 ## Documentation Structure Routing
 
-- Areas: Marketplace-facing entry docs, user guidance, developer guidance, project planning/navigation
-- Tags: docs-routing, marketplace, navigation
+- Areas: entry docs, user guidance, harness/project routing
+- Tags: docs-routing, navigation
 - Docs:
   - Entry README: `README.md`
-  - Chinese README: `readme/README_zh_Hans.md`
-  - User docs: `docs/en/user/`, `docs/zh/user/`
-  - Developer docs: `docs/en/developer/`, `docs/zh/developer/`
-  - Project docs: `docs/project/`
-  - Marketplace/privacy: `docs/MARKETPLACE.md`, `PRIVACY.md`
-  - Legacy compatibility docs: `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, `docs/ISSUES.md`, `docs/ARCHITECTURE.md`, `docs/API_MAPPING.md`
+  - Harness/project docs: `docs/project/harness-workflow.md`, `docs/project/knowledge-map.md`
+  - Current-state design: `docs/current/system-map.md`
+  - Future intent: `docs/target/architecture-intent.md`
+  - User docs: `docs/user/en/usage.md`, `docs/user/zh/usage.md`
 - Read When:
-  - updating Marketplace-facing documentation or support links
   - moving or renaming docs
-  - checking whether privacy wording still matches user-facing setup and usage docs
+  - updating user-facing setup, usage, or disclosure wording
 - Boundaries:
   - keep `README.md` concise and English-only
+  - keep Chinese user-facing docs in `docs/user/zh/usage.md`
   - keep Tool-first, Datasource-later positioning
-  - do not describe packaging or Marketplace submission as completed unless evidence exists
-  - update `docs/MARKETPLACE.md` and `PRIVACY.md` together when Marketplace-facing disclosures change
-  - when docs are moved, keep legacy compatibility docs or redirect notes discoverable in this map until they are intentionally removed
+  - keep disclosures and product-status wording synchronized across `README.md`, `docs/user/en/usage.md`, and `docs/user/zh/usage.md`
 
 ## Knowledge Maturity Routing
 

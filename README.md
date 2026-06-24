@@ -30,10 +30,10 @@ Current repository direction:
 3. Open the BookStack provider settings in Dify.
 4. Enter your BookStack `base_url`, `token_id`, and `token_secret` in the Dify UI.
 
-See:
+See the consolidated guides:
 
-- [Installation guide](docs/en/user/installation.md)
-- [Configuration guide](docs/en/user/configuration.md)
+- [English usage guide](docs/user/en/usage.md)
+- [Chinese usage guide](docs/user/zh/usage.md)
 
 ## Usage
 
@@ -44,25 +44,17 @@ Recommended first step:
 3. Confirm the provider can reach the target BookStack instance.
 4. Use the implemented page and listing tools as needed, and refer to the linked user docs for details.
 
-More information:
-
-- [Implemented tools](docs/en/user/tools.md)
-- [Examples](docs/en/user/examples.md)
-- [Troubleshooting](docs/en/user/troubleshooting.md)
-- [Datasource status](docs/en/user/datasource.md)
+More information is covered in the usage guides above.
 
 ## Privacy
 
-The plugin uses credentials provided by the user and connects only to the configured BookStack instance through the Dify runtime.
-
-See the full [Privacy Policy](PRIVACY.md).
+The plugin uses credentials provided by the user and connects only to the configured BookStack instance through the Dify runtime. Privacy and credential handling guidance is covered in the usage guides.
 
 ## Repository and support
 
 - Repository: <https://github.com/pandaria75/dify-plugin-bookstack>
 - Issues / support: <https://github.com/pandaria75/dify-plugin-bookstack/issues>
-- Chinese README: [readme/README_zh_Hans.md](readme/README_zh_Hans.md)
-- Developer docs: [docs/en/developer/development.md](docs/en/developer/development.md)
+- Architecture intent: [docs/target/architecture-intent.md](docs/target/architecture-intent.md)
 
 ## License
 

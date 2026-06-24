@@ -337,7 +337,7 @@ Project-specific instructions are maintained in the imported block below.
 - Use `_assets/icon.svg` in `manifest.yaml`; keep provider YAML icon references aligned with the current Dify provider schema, such as `icon.svg` in `provider/bookstack.yaml`.
 - Keep credentials in Dify provider schema only: `base_url`, `token_id`, `token_secret`, plus optional defaults.
 - Do not hardcode BookStack URLs, tokens, or secrets in code, docs examples, or tests.
-- Keep `README.md` English-only; put Chinese text in `README_zh.md`.
+- Keep `README.md` English-only; put Chinese user-facing text in `docs/user/zh/usage.md`.
 - Preserve the current plugin focus: Tool first, Datasource later.
 
 ## BookStack Integration Rules
@@ -350,9 +350,9 @@ Project-specific instructions are maintained in the imported block below.
 
 ## Docs and Planning
 
-- Keep `docs/ROADMAP.md`, `docs/DEVELOPMENT.md`, and `docs/ISSUES.md` in sync with implementation order.
-- `docs/research-notes.md` is the place for version-sensitive judgments about Dify or BookStack behavior.
-- If a change affects Marketplace readiness, update `docs/MARKETPLACE.md` and `PRIVACY.md` together.
+- Keep product status, planned-vs-available scope, and setup guidance aligned across `README.md`, `docs/user/en/usage.md`, and `docs/user/zh/usage.md`.
+- Keep version-sensitive Dify or BookStack behavior notes in the active user/developer docs that describe that behavior; do not leave stale references to removed planning-note files.
+- If a change affects Marketplace, privacy, or disclosure expectations, keep the relevant statements synchronized across `README.md` and the usage docs.
 
 ## Working Style
 
