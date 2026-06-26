@@ -2,7 +2,7 @@
 
 Use rule metadata from `00-repository-rules.md` when workflow constraints are provisional, verified, future-state, or strictly enforceable.
 
-## Harness Gates
+## Marionettist Gates
 
 - Rule: For non-trivial tasks, do not move from analysis to coding or between approved coding slices or approved parallel groups without explicit user confirmation, unless the selected gate policy explicitly allows continuation for the next already-approved `gateClass: simple` slice and that slice's supplemental `risk_score` does not require a stronger pause. Review for the current approved slice or group may still start automatically after coding.
   - type: hard

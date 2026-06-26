@@ -25,7 +25,7 @@ Use this skill to build `.task/<task-id>/context-pack.md` before implementation.
 ## Steps
 
 1. Read `.task/active.json` and `.task/<task-id>/state.json`.
-2. Read `harness.config.yaml` when it exists and note `knowledge.mode` and `knowledge.maturity`.
+2. Read `marionettist.config.yaml` when it exists and note `knowledge.mode` and `knowledge.maturity`.
 3. Read the requirement document if available, preferring `.task/<task-id>/requirement.md`.
 4. Read the implementation plan if available, preferring `.task/<task-id>/implementation-plan.md`.
 5. For bugfix or incident-style work, read `.task/<task-id>/incident.md` when it exists.
@@ -38,7 +38,7 @@ Use this skill to build `.task/<task-id>/context-pack.md` before implementation.
 12. Create or update `.task/<task-id>/context-pack.md`.
 13. Do not implement code.
 14. If legacy `.task/context-pack.md` exists, read it only as a migration fallback and recommend moving context into the active task directory.
-15. Record the task's recommended and selected gate policy when available from task artifacts and, when present, `harness.config.yaml`, along with the stop conditions that still require a pause.
+15. Record the task's recommended and selected gate policy when available from task artifacts and, when present, `marionettist.config.yaml`, along with the stop conditions that still require a pause.
 
 ## Output Artifact
 
@@ -159,14 +159,14 @@ Use `Loaded Context` to explain routing decisions and why each source was includ
 ## Guardrails
 
 - Keep the context pack compact.
-- Read mode/maturity from `harness.config.yaml` when available and reflect them in the context pack.
+- Read mode/maturity from `marionettist.config.yaml` when available and reflect them in the context pack.
 - Do not copy full docs or source files.
 - Include forbidden scope explicitly.
 - Include validation commands explicitly.
 - When the current approved work is `parallel-capable`, include both the parallel mode and the sequential fallback order.
 - When the current approved work is a parallel group, include members, shared files, merge owner, conflict rule, and group validation.
 - Include stop conditions explicitly.
-- Record recommended and selected gate policy from task artifacts when available, and also note relevant `harness.config.yaml` gate policy defaults or overrides when present.
+- Record recommended and selected gate policy from task artifacts when available, and also note relevant `marionettist.config.yaml` gate policy defaults or overrides when present.
 - In markdown, prefer the canonical field name `finalApprovalRequired` or explicitly note that it maps to the JSON key of the same name so agents do not copy a humanized label into `state.json`.
 - If a task-local policy override is selected, note that it changes the task posture but does not bypass required analysis gates, required final approval by default, or any other explicit stop condition.
 - For bugfix tasks, include observed behavior, expected behavior, reproduction steps, evidence, suspected scope, and regression risk when available.

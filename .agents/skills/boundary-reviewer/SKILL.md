@@ -33,7 +33,7 @@ This skill is primarily a boundary, scope, rules, and validation reviewer. For h
    - architecture-sensitive changes
    - SQL or data migration risks
    - parallel group shared files, merge owner, fallback order, and group validation when applicable
-   - harness gate compliance for analysis, coding slice/group, and review transitions
+   - Marionettist gate compliance for analysis, coding slice/group, and review transitions
    - rule conflicts
    - missing validation
    - docs, rules, or knowledge-map sync needs
@@ -65,7 +65,7 @@ Return `BLOCKED` when:
 - destructive SQL or migration risk is detected without explicit approval
 - required validation is missing for architecture-sensitive changes
 - parallel group work touched shared files without a declared merge owner or conflict resolution rule
-- current changes show the task crossed a required harness gate without explicit user confirmation
+- current changes show the task crossed a required Marionettist gate without explicit user confirmation
 
 Do not block solely for code-quality or maintainability observations unless the task explicitly requires the higher-risk second review dimension and the issue creates material release, correctness, safety, or supportability risk.
 
@@ -104,7 +104,7 @@ Do not block solely for code-quality or maintainability observations unless the 
 - Group Validation:
 - Issues:
 
-## Harness Gate Check
+## Marionettist Gate Check
 
 ## Documentation Sync Needed
 

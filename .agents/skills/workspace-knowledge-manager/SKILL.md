@@ -36,7 +36,7 @@ Use for helpful follow-up questions that do not affect the current docs or rules
 
 ## Modes
 
-Before choosing document depth, read `harness.config.yaml` when it exists and capture:
+Before choosing document depth, read `marionettist.config.yaml` when it exists and capture:
 
 - `knowledge.mode`: `standard` or `mudball`
 - `knowledge.maturity`: `L0` through `L4`
@@ -62,10 +62,10 @@ Mudball projects should not be pushed toward L3/L4 by default. L0-L1 are valid a
 
 ### init
 
-Use when a project is first connected to the harness.
+Use when a project is first connected to Marionettist.
 
 1. Inspect project configuration and high-level structure.
-2. Read `harness.config.yaml` if present and note `knowledge.mode` and `knowledge.maturity`.
+2. Read `marionettist.config.yaml` if present and note `knowledge.mode` and `knowledge.maturity`.
 3. Identify architecture shape:
    - frontend
    - backend

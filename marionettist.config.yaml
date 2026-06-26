@@ -1,0 +1,80 @@
+project:
+  name: "dify-plugin-bookstack"
+  type: "library"
+  architecture: "monolith"
+  primaryLanguage: "python"
+
+paths:
+  docs: "docs"
+  rules: ".aiassistant/rules"
+  skills: ".agents/skills"
+  task: ".task"
+  knowledgeMap: "docs/project/knowledge-map.md"
+
+taskState:
+  activeTask: ".task/active.json"
+  taskDirectoryPattern: ".task/<yyyy-MM-dd>/<task-slug>"
+  legacyContextPackFallback: ".task/context-pack.md"
+
+models:
+  # Maps skill frontmatter model_requirement fields to profiles.
+  # Skills declare: reasoning, coding, reflective, utility
+  requirementMapping:
+    reasoning: "think"
+    coding: "build"
+    reflective: "review"
+    utility: "run"
+  # Profile role defaults live here; project-local overrides belong in
+
+docs:
+  language: "zh-CN"
+  rulesLanguage: "en"
+  style: "design-and-architecture"
+
+knowledge:
+  mode: "mudball"
+  maturity: "L2"
+
+validation:
+  defaultCommands: []
+
+gatePolicy:
+  defaultMode: "balanced"
+  finalApprovalRequired: true
+  # defaultMode is the repository fallback posture for tasks that do not record
+  # a task-local gatePolicy.selected value. An explicit selected mode wins for
+  # that task; recommended modes remain advisory only.
+  # When true, a task-local plan or task state may request a different mode
+  # than defaultMode, but explicit user instructions still take precedence.
+  allowTaskOverride: true
+
+# Tier-classification hints belong in .marionettist/tier-policy.yml.
+# That file is advisory for Tier classification, workflow hints, review hints,
+# and model-profile hints only. It must not redefine gatePolicy semantics,
+# selected task gates, or provider/model IDs.
+# Cross-validation of modelProfileHint values and stricter unknown-value rejection
+# are deferred future hardening, not part of the current MVP contract.
+
+# Optional OpenCode adapter settings.
+# Omit opencode.permissionMode to keep compatibility fallback behavior.
+# permissionMode: default preserves current behavior.
+# permissionMode: moderate|loose increases local flexibility but still keeps
+# the dangerous-command baseline where OpenCode schema can express it.
+# opencode:
+#   commandSurface: "minimal"
+#   permissionMode: "default"
+
+# Optional lightweight hints for higher-risk project areas.
+# Use this to flag zones such as auth, billing, schema changes,
+# production config, or external API contracts.
+# Marionettist still works normally when this is empty.
+# Treat this as analysis/review guidance, not as a fully enforced policy system.
+riskZones: []
+
+distribution:
+  mode: "adapter"
+
+opencode:
+  commandSurface: "advanced"
+  permissionMode: "loose"
+  pluginSource: "package"

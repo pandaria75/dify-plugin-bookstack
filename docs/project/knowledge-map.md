@@ -8,7 +8,7 @@ Docs explain context. Rules enforce constraints. Keep them separate and update t
 
 Rule files may also record rule metadata such as `type`, `confidence`, and `source`. Read those semantics from `AGENTS.md` and the rule files themselves; do not treat every rule entry as equally strong by default.
 
-When `harness.config.yaml` exists, read `knowledge.mode` and `knowledge.maturity` before deciding how much knowledge to load or create.
+When `marionettist.config.yaml` exists, read `knowledge.mode` and `knowledge.maturity` before deciding how much knowledge to load or create.
 
 ## Project Overview
 

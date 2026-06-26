@@ -42,7 +42,7 @@ Use metadata when rule strength or evidence matters.
 ## General Constraints
 
 - Do not expand task scope without explicit approval.
-- Do not overwrite project-local knowledge during harness sync.
+- Do not overwrite project-local knowledge during Marionettist sync.
 - Do not treat documentation as a replacement for source inspection.
 - Prefer small, reversible changes.
 - Preserve existing project conventions.
