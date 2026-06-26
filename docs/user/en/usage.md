@@ -23,19 +23,20 @@ Use placeholders such as `<your-bookstack-host>` in local notes, screenshots, an
 1. Build or obtain the BookStack plugin package from this repository.
 2. Open the plugin management area in Dify.
 3. Import the plugin package.
-4. Confirm the BookStack plugin appears in the plugin list.
+4. Look for the BookStack plugin in the plugin list.
 5. Open the BookStack provider settings.
 
-### Screenshot Placeholders For Import
+### Import Screenshots
 
-Do not add real screenshots in this first documentation pass. Use text placeholders only.
+Use these screens to find the import entry and recognize what the imported plugin view should look like in Dify.
 
-1. `[Screenshot placeholder: Dify plugin import entry]`
-   - Capture the plugin-management page before selecting the package file.
-   - Redact workspace names, user names, and production identifiers.
-2. `[Screenshot placeholder: imported BookStack plugin view]`
-   - Capture the imported plugin card or detail view.
-   - Show only the plugin name and visible installation status.
+![Dify plugin import entry](../images/dify-plugin-import-entry.png)
+
+*Use this screen to locate the plugin import entry before selecting the plugin package.*
+
+![Imported BookStack plugin view](../images/imported-bookstack-plugin-view.png)
+
+*After import, the plugin list will look similar to this BookStack plugin view.*
 
 ## Configure Provider Credentials
 
@@ -45,7 +46,7 @@ Enter credentials through the Dify provider form only:
 - `token_id`: BookStack API token ID
 - `token_secret`: BookStack API token secret
 
-Recommended first check after saving credentials:
+Recommended first steps after saving credentials:
 
 1. Save the provider configuration.
 2. Run `validate_credentials` first.
@@ -59,11 +60,11 @@ Recommended first check after saving credentials:
 - Prefer a demo or non-production BookStack environment for early validation.
 - If a screenshot shows filled values, replace them with fake placeholders before capture.
 
-### Screenshot Placeholder For Provider Setup
+### Provider Configuration Screenshot
 
-`[Screenshot placeholder: Dify provider configuration form showing base_url, token_id, and token_secret with redacted or fake sample values]`
+![Dify provider configuration form showing base_url, token_id, and token_secret with redacted or fake sample values](../images/dify-provider-configuration-form.png)
 
-Capture only the provider form state. Do not expose real `token_id`, real `token_secret`, production-only hosts, or hidden credentials that become visible in the UI.
+*Provider credential form with redacted or fake sample values only.*
 
 ## Available Tool Behavior
 
@@ -92,9 +93,11 @@ Capture only the provider form state. Do not expose real `token_id`, real `token
 1. Import the plugin into Dify.
 2. Configure `base_url`, `token_id`, and `token_secret`.
 3. Run `validate_credentials`.
-4. Use `list_books` and `list_chapters` to confirm accessible destinations.
+4. Use `list_books` and `list_chapters` to find the destinations you can work with.
 5. Use `search_pages` or `get_page` when you need to inspect existing content.
-6. Use `create_page`, `update_page`, or `publish_page` only after confirming the destination.
+6. Use `create_page`, `update_page`, or `publish_page` only after choosing the destination.
+
+This order keeps the current Tool-first workflow simple: install, connect, validate, inspect targets, then write content.
 
 ## Basic Workflow Example: Publish A Page
 
@@ -103,7 +106,7 @@ The most practical end-to-end example today is based on `publish_page`.
 Use this workflow when you want to:
 
 - draft Markdown in Dify
-- let a human confirm the content and destination
+- let a human review the content and destination
 - then create or update a BookStack page
 
 ### Suggested node order
@@ -153,20 +156,21 @@ Prefer `page_id` whenever your workflow already knows the stable target page.
 
 ### Human review checklist
 
-- Confirm the final `title`.
-- Confirm the Markdown body is ready.
-- Confirm `page_id` when updating a known page.
-- Confirm `book_id` and `chapter_id` point to the intended destination.
-- Confirm the workflow should publish now.
+- Check the final `title`.
+- Review the Markdown body before publishing.
+- Verify `page_id` when updating a known page.
+- Make sure `book_id` and `chapter_id` point to the intended destination.
+- Decide whether the workflow should publish now.
 
-### Screenshot Placeholders For Workflow Docs
+### Workflow Screenshots
 
-- `[Screenshot placeholder: workflow canvas overview with publish_page flow]`
-- `[Screenshot placeholder: human review step with sample content only]`
-- `[Screenshot placeholder: publish_page tool configuration with placeholder values only]`
-- `[Screenshot placeholder: success branch showing sample page_id, title, url, and action]`
+![Workflow canvas overview with publish_page flow](../images/workflow-canvas-publish-page-flow.png)
 
-When preparing screenshots later, redact usernames, internal project names, sensitive page URLs, workspace names, and any production identifiers.
+*Use this canvas layout as a reference for where `publish_page` fits in the workflow.*
+
+![BookStack successfully generated the page](../images/bookstack-generated-page.png)
+
+*After the tool runs, the resulting BookStack page will look similar to this example.*
 
 ## Troubleshooting
 

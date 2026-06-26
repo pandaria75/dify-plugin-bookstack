@@ -16,26 +16,25 @@
 - 一个可访问的 BookStack 实例
 - 在 BookStack 中创建好的 API 凭据
 
-在本地说明、截图和示例中请使用 `<your-bookstack-host>` 之类的占位值。不要粘贴真实生产 URL、token、secret 或原始 `Authorization` 请求头。
-
 ## 安装并导入插件
 
 1. 从本仓库构建或获取 BookStack 插件包。
 2. 打开 Dify 的插件管理区域。
 3. 导入插件包。
-4. 确认 BookStack 插件出现在插件列表中。
+4. 在插件列表中找到 BookStack 插件。
 5. 打开 BookStack provider 设置。
 
-### 导入流程截图占位
+### 导入流程截图
 
-在第一版文档整理阶段不要加入真实截图，只保留文字占位。
+下面两张截图用于帮助你找到导入入口，并识别导入后的 BookStack 插件界面大致会是什么样子。
 
-1. `[截图占位：Dify 插件导入入口]`
-   - 在选择插件包文件之前截图插件管理页面。
-   - 遮挡工作区名称、用户名和生产环境标识。
-2. `[截图占位：已导入的 BookStack 插件视图]`
-   - 截取导入后的插件卡片或详情页。
-   - 仅展示插件名称和可见安装状态。
+![Dify 插件导入入口](../images/dify-plugin-import-entry.png)
+
+*可先根据这张图找到导入插件包前的 Dify 插件管理入口。*
+
+![已导入的 BookStack 插件视图](../images/imported-bookstack-plugin-view.png)
+
+*导入完成后，插件列表中的 BookStack 插件界面大致会与此类似。*
 
 ## 配置 Provider 凭据
 
@@ -45,7 +44,7 @@
 - `token_id`：BookStack API token ID
 - `token_secret`：BookStack API token secret
 
-保存凭据后的建议首次检查顺序：
+保存凭据后的建议使用顺序：
 
 1. 保存 provider 配置。
 2. 先运行 `validate_credentials`。
@@ -59,11 +58,11 @@
 - 尽量优先使用演示或非生产环境的 BookStack 目标做早期验证。
 - 如果截图中存在已填写的值，请在截图前替换为虚构占位内容。
 
-### Provider 设置截图占位
+### Provider 设置截图
 
-`[截图占位：Dify provider 配置表单，展示 base_url、token_id 和 token_secret，字段值已打码或替换为虚构示例值]`
+![Dify provider 配置表单，展示 base_url、token_id 和 token_secret，字段值已打码或替换为虚构示例值](../images/dify-provider-configuration-form.png)
 
-截图时仅展示 provider 表单状态。不要暴露真实 `token_id`、真实 `token_secret`、仅用于生产的主机名，或任何会在 UI 中显示出来的敏感凭据。
+*Provider 凭据配置表单，示例字段值已打码或替换为虚构内容。*
 
 ## 当前可用工具行为
 
@@ -92,9 +91,11 @@
 1. 将插件导入 Dify。
 2. 配置 `base_url`、`token_id` 和 `token_secret`。
 3. 运行 `validate_credentials`。
-4. 使用 `list_books` 和 `list_chapters` 确认可访问的目标位置。
+4. 使用 `list_books` 和 `list_chapters` 找到可用的目标位置。
 5. 需要检查现有内容时，使用 `search_pages` 或 `get_page`。
-6. 只有在确认目标后，再使用 `create_page`、`update_page` 或 `publish_page`。
+6. 选好目标后，再使用 `create_page`、`update_page` 或 `publish_page`。
+
+按照这个顺序操作，可以保持当前 Tool-first 的主流程：先安装、再连接、先验证、后写入。
 
 ## 基础工作流示例：发布页面
 
@@ -103,7 +104,7 @@
 适用场景：
 
 - 在 Dify 中起草 Markdown
-- 让人工确认内容和目标位置
+- 让人工复核内容和目标位置
 - 然后创建或更新 BookStack 页面
 
 ### 建议节点顺序
@@ -153,20 +154,21 @@
 
 ### 人工审核检查表
 
-- 确认最终 `title`。
-- 确认 Markdown 正文可以发布。
-- 已知更新时确认 `page_id` 正确。
+- 检查最终 `title`。
+- 复核 Markdown 正文是否适合发布。
+- 已知更新时核对 `page_id` 是否正确。
 - 确认 `book_id` 和 `chapter_id` 指向预期位置。
-- 确认当前确实应该立即发布。
+- 判断当前是否应立即发布。
 
-### 工作流截图占位
+### 工作流截图
 
-- `[截图占位：包含 publish_page 流程的工作流总览]`
-- `[截图占位：仅展示示例内容的人工审核步骤]`
-- `[截图占位：仅使用占位值的 publish_page 工具配置]`
-- `[截图占位：展示示例 page_id、title、url 和 action 的成功分支]`
+![包含 publish_page 流程的工作流总览](../images/workflow-canvas-publish-page-flow.png)
 
-后续补充截图时，请打码用户名、内部项目名称、敏感页面 URL、工作区名称以及任何生产环境标识。
+*可参考这张工作流画布，了解 `publish_page` 通常放在什么位置。*
+
+![BookStack 成功生成页面](../images/bookstack-generated-page.png)
+
+*工具运行后，BookStack 中的页面结果通常会与此示例类似。*
 
 ## 故障排查
 
