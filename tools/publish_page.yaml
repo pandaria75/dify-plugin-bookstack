@@ -9,6 +9,36 @@ description:
     en_US: Create or update a BookStack page by page ID, doc_id tag, path, or safe exact title match.
     zh_Hans: 通过页面 ID、doc_id 标签、路径或安全的精确标题匹配创建或更新 BookStack 页面。
   llm: Create or update a BookStack page by page ID, doc_id tag, path, or safe exact title match.
+output_schema:
+  type: object
+  properties:
+    success:
+      type: boolean
+      description: Whether publishing the page succeeded.
+    error:
+      type: string
+      nullable: true
+      description: Error message when publishing the page fails.
+    page_id:
+      type: string
+      nullable: true
+      description: Published BookStack page identifier.
+    title:
+      type: string
+      nullable: true
+      description: Published page title.
+    url:
+      type: string
+      nullable: true
+      description: Published page URL.
+    action:
+      type: string
+      nullable: true
+      description: Action label for the page result.
+    raw:
+      type: object
+      nullable: true
+      description: Original BookStack page object.
 parameters:
   - name: title
     type: string

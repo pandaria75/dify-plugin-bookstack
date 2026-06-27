@@ -11,6 +11,7 @@ except ImportError:  # pragma: no cover - allows helper imports in unit tests
     ToolInvokeMessage = Any
 
 from bookstack_client import BookStackClient, BookStackError
+from tools.output_payloads import collection_error, collection_success, emit_variable_messages
 
 
 def normalize_page_list_result(raw: dict[str, Any]) -> dict[str, Any]:
@@ -36,15 +37,17 @@ class ListPagesTool(Tool):
             client = BookStackClient.from_credentials(self.runtime.credentials)
             payload = client.list_pages(count=count, offset=offset)
         except BookStackError as exc:
-            yield self.create_text_message(f"success=false\nerror={exc}")
+            yield from emit_variable_messages(self, collection_error("pages", str(exc), include_total=True))
             return
 
         raw_pages = payload.get("data", [])
-        response = {
-            "pages": [normalize_page_list_result(item) for item in raw_pages],
-            "count": len(raw_pages),
-        }
-        if "total" in payload:
-            response["total"] = payload.get("total")
+        total = payload.get("total") if "total" in payload else None
 
-        yield self.create_json_message(response)
+        yield from emit_variable_messages(
+            self,
+            collection_success(
+                "pages",
+                [normalize_page_list_result(item) for item in raw_pages],
+                total=total,
+            )
+        )

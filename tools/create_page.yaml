@@ -9,6 +9,36 @@ description:
     en_US: Create a BookStack page in a book root or chapter and return normalized metadata.
     zh_Hans: 在 BookStack 书籍根目录或章节中创建页面并返回标准化元数据。
   llm: Create a BookStack page in a book root or chapter and return normalized metadata.
+output_schema:
+  type: object
+  properties:
+    success:
+      type: boolean
+      description: Whether creating the page succeeded.
+    error:
+      type: string
+      nullable: true
+      description: Error message when creating the page fails.
+    page_id:
+      type: string
+      nullable: true
+      description: Created BookStack page identifier.
+    title:
+      type: string
+      nullable: true
+      description: Created page title.
+    url:
+      type: string
+      nullable: true
+      description: Created page URL.
+    action:
+      type: string
+      nullable: true
+      description: Action label for the page result.
+    raw:
+      type: object
+      nullable: true
+      description: Original BookStack page object.
 parameters:
   - name: title
     type: string

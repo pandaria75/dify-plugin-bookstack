@@ -9,14 +9,23 @@ from tools.publish_page import PublishPageTool
 
 class PublishPageToolTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.tool = PublishPageTool()
+        self.tool = object.__new__(PublishPageTool)
         self.tool.runtime = Mock()
         self.tool.runtime.credentials = {"base_url": "https://example.com", "token_id": "id", "token_secret": "secret"}
         self.tool.create_json_message = Mock(side_effect=lambda payload: payload)
         self.tool.create_text_message = Mock(side_effect=lambda text: text)
+        self.tool.create_variable_message = Mock(
+            side_effect=lambda variable_name, variable_value: {
+                "variable_name": variable_name,
+                "variable_value": variable_value,
+            }
+        )
 
     def _invoke(self, **params):
-        return list(self.tool._invoke(params))[0]
+        return {
+            message["variable_name"]: message["variable_value"]
+            for message in self.tool._invoke(params)
+        }
 
     @patch("tools.publish_page.BookStackClient.from_credentials")
     def test_updates_by_page_id(self, from_credentials: Mock) -> None:
@@ -102,7 +111,18 @@ class PublishPageToolTests(unittest.TestCase):
 
         result = self._invoke(title="Title", markdown="Body", doc_id="doc-11")
 
-        self.assertEqual(result, "success=false\nerror=ambiguous doc_id match")
+        self.assertEqual(
+            result,
+            {
+                "success": False,
+                "error": "ambiguous doc_id match",
+                "page_id": None,
+                "title": None,
+                "url": None,
+                "action": None,
+                "raw": None,
+            },
+        )
         client.update_page.assert_not_called()
         client.create_page.assert_not_called()
 
@@ -131,7 +151,18 @@ class PublishPageToolTests(unittest.TestCase):
 
         result = self._invoke(title="Title", markdown="Body", path="books/ops/runbook")
 
-        self.assertEqual(result, "success=false\nerror=ambiguous path match")
+        self.assertEqual(
+            result,
+            {
+                "success": False,
+                "error": "ambiguous path match",
+                "page_id": None,
+                "title": None,
+                "url": None,
+                "action": None,
+                "raw": None,
+            },
+        )
         client.update_page.assert_not_called()
         client.create_page.assert_not_called()
 
@@ -143,7 +174,18 @@ class PublishPageToolTests(unittest.TestCase):
 
         result = self._invoke(title="Title", markdown="Body")
 
-        self.assertEqual(result, "success=false\nerror=book_id or chapter_id is required to create a new page")
+        self.assertEqual(
+            result,
+            {
+                "success": False,
+                "error": "book_id or chapter_id is required to create a new page",
+                "page_id": None,
+                "title": None,
+                "url": None,
+                "action": None,
+                "raw": None,
+            },
+        )
         client.update_page.assert_not_called()
         client.create_page.assert_not_called()
 
@@ -195,7 +237,18 @@ class PublishPageToolTests(unittest.TestCase):
 
         result = self._invoke(title="Title", markdown="Body")
 
-        self.assertEqual(result, "success=false\nerror=book_id or chapter_id is required to create a new page")
+        self.assertEqual(
+            result,
+            {
+                "success": False,
+                "error": "book_id or chapter_id is required to create a new page",
+                "page_id": None,
+                "title": None,
+                "url": None,
+                "action": None,
+                "raw": None,
+            },
+        )
         client.create_page.assert_not_called()
 
     @patch("tools.publish_page.BookStackClient.from_credentials")
@@ -209,7 +262,18 @@ class PublishPageToolTests(unittest.TestCase):
 
         result = self._invoke(title="Title", markdown="Body")
 
-        self.assertEqual(result, "success=false\nerror=ambiguous title match")
+        self.assertEqual(
+            result,
+            {
+                "success": False,
+                "error": "ambiguous title match",
+                "page_id": None,
+                "title": None,
+                "url": None,
+                "action": None,
+                "raw": None,
+            },
+        )
         client.update_page.assert_not_called()
         client.create_page.assert_not_called()
 
@@ -254,7 +318,18 @@ class PublishPageToolTests(unittest.TestCase):
 
         result = self._invoke(title="Title", markdown="Body", doc_id="doc-21", path="books/title")
 
-        self.assertEqual(result, "success=false\nerror=ambiguous title match")
+        self.assertEqual(
+            result,
+            {
+                "success": False,
+                "error": "ambiguous title match",
+                "page_id": None,
+                "title": None,
+                "url": None,
+                "action": None,
+                "raw": None,
+            },
+        )
         client.update_page.assert_not_called()
         client.create_page.assert_not_called()
 
@@ -308,7 +383,18 @@ class PublishPageToolTests(unittest.TestCase):
 
         result = self._invoke(title="Title", markdown="Body", book_id="8")
 
-        self.assertEqual(result, "success=false\nerror=Permission denied")
+        self.assertEqual(
+            result,
+            {
+                "success": False,
+                "error": "Permission denied",
+                "page_id": None,
+                "title": None,
+                "url": None,
+                "action": None,
+                "raw": None,
+            },
+        )
 
 
 if __name__ == "__main__":

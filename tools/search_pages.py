@@ -11,6 +11,7 @@ except ImportError:  # pragma: no cover - allows helper imports in unit tests
     ToolInvokeMessage = Any
 
 from bookstack_client import BookStackClient, BookStackError
+from tools.output_payloads import collection_error, collection_success, emit_variable_messages
 
 
 def normalize_search_page_result(raw: dict[str, Any]) -> dict[str, Any]:
@@ -26,19 +27,20 @@ class SearchPagesTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         query = str(tool_parameters.get("query", "")).strip()
         if not query:
-            yield self.create_text_message("success=false\nerror=query is required")
+            yield from emit_variable_messages(self, collection_error("results", "query is required"))
             return
 
         try:
             client = BookStackClient.from_credentials(self.runtime.credentials)
             raw_results = client.search_pages(query)
         except BookStackError as exc:
-            yield self.create_text_message(f"success=false\nerror={exc}")
+            yield from emit_variable_messages(self, collection_error("results", str(exc)))
             return
 
-        yield self.create_json_message(
-            {
-                "results": [normalize_search_page_result(item) for item in raw_results],
-                "count": len(raw_results),
-            }
+        yield from emit_variable_messages(
+            self,
+            collection_success(
+                "results",
+                [normalize_search_page_result(item) for item in raw_results],
+            )
         )

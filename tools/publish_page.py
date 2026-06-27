@@ -13,6 +13,7 @@ except ImportError:  # pragma: no cover - allows helper imports in unit tests
 
 from bookstack_client import BookStackClient, BookStackError
 from tools.create_page import normalize_created_page_result
+from tools.output_payloads import emit_variable_messages, object_error, success_payload
 from tools.page_inputs import normalize_tags
 from tools.update_page import normalize_updated_page_result
 
@@ -152,11 +153,14 @@ class PublishPageTool(Tool):
         if doc_id:
             tags = _ensure_doc_id_tag(tags, doc_id)
 
+        def emit_error(error: str) -> Generator[ToolInvokeMessage]:
+            return emit_variable_messages(self, object_error(error, "page_id", "title", "url", "action", "raw"))
+
         if not title:
-            yield self.create_text_message("success=false\nerror=title is required")
+            yield from emit_error("title is required")
             return
         if not markdown:
-            yield self.create_text_message("success=false\nerror=markdown is required")
+            yield from emit_error("markdown is required")
             return
 
         try:
@@ -171,7 +175,7 @@ class PublishPageTool(Tool):
                     book_id=book_id if book_id not in {None, ""} else None,
                     chapter_id=chapter_id if chapter_id not in {None, ""} else None,
                 )
-                yield self.create_json_message({"success": True, **normalize_updated_page_result(raw_page)})
+                yield from emit_variable_messages(self, success_payload(**normalize_updated_page_result(raw_page)))
                 return
 
             query_cache: dict[str, list[dict[str, Any]]] = {}
@@ -184,7 +188,7 @@ class PublishPageTool(Tool):
             if doc_id:
                 doc_id_matches = _match_doc_id(search_pages(doc_id), doc_id=doc_id)
                 if len(doc_id_matches) > 1:
-                    yield self.create_text_message("success=false\nerror=ambiguous doc_id match")
+                    yield from emit_error("ambiguous doc_id match")
                     return
                 if len(doc_id_matches) == 1:
                     raw_page = client.update_page(
@@ -195,13 +199,13 @@ class PublishPageTool(Tool):
                         book_id=book_id if book_id not in {None, ""} else None,
                         chapter_id=chapter_id if chapter_id not in {None, ""} else None,
                     )
-                    yield self.create_json_message({"success": True, **normalize_updated_page_result(raw_page)})
+                    yield from emit_variable_messages(self, success_payload(**normalize_updated_page_result(raw_page)))
                     return
 
             if path:
                 path_matches = _match_path(search_pages(path), path=path)
                 if len(path_matches) > 1:
-                    yield self.create_text_message("success=false\nerror=ambiguous path match")
+                    yield from emit_error("ambiguous path match")
                     return
                 if len(path_matches) == 1:
                     raw_page = client.update_page(
@@ -212,7 +216,7 @@ class PublishPageTool(Tool):
                         book_id=book_id if book_id not in {None, ""} else None,
                         chapter_id=chapter_id if chapter_id not in {None, ""} else None,
                     )
-                    yield self.create_json_message({"success": True, **normalize_updated_page_result(raw_page)})
+                    yield from emit_variable_messages(self, success_payload(**normalize_updated_page_result(raw_page)))
                     return
 
             exact_matches = _match_exact_title(
@@ -223,7 +227,7 @@ class PublishPageTool(Tool):
             )
 
             if len(exact_matches) > 1:
-                yield self.create_text_message("success=false\nerror=ambiguous title match")
+                yield from emit_error("ambiguous title match")
                 return
 
             if len(exact_matches) == 1:
@@ -235,11 +239,11 @@ class PublishPageTool(Tool):
                     book_id=book_id if book_id not in {None, ""} else None,
                     chapter_id=chapter_id if chapter_id not in {None, ""} else None,
                 )
-                yield self.create_json_message({"success": True, **normalize_updated_page_result(raw_page)})
+                yield from emit_variable_messages(self, success_payload(**normalize_updated_page_result(raw_page)))
                 return
 
             if book_id in {None, ""} and chapter_id in {None, ""}:
-                yield self.create_text_message("success=false\nerror=book_id or chapter_id is required to create a new page")
+                yield from emit_error("book_id or chapter_id is required to create a new page")
                 return
 
             raw_page = client.create_page(
@@ -249,6 +253,6 @@ class PublishPageTool(Tool):
                 book_id=book_id if book_id not in {None, ""} else None,
                 chapter_id=chapter_id if chapter_id not in {None, ""} else None,
             )
-            yield self.create_json_message({"success": True, **normalize_created_page_result(raw_page)})
+            yield from emit_variable_messages(self, success_payload(**normalize_created_page_result(raw_page)))
         except BookStackError as exc:
-            yield self.create_text_message(f"success=false\nerror={exc}")
+            yield from emit_error(str(exc))

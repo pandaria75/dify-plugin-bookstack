@@ -9,6 +9,65 @@ description:
     en_US: List accessible BookStack chapters and return normalized chapter metadata.
     zh_Hans: 列出可访问的 BookStack 章节并返回标准化章节元数据。
   llm: List accessible BookStack chapters and return normalized chapter metadata.
+output_schema:
+  type: object
+  properties:
+    success:
+      type: boolean
+      description: Whether listing chapters succeeded.
+    error:
+      type: string
+      nullable: true
+      description: Error message when listing chapters fails.
+    chapters:
+      type: array
+      description: Normalized BookStack chapters.
+      items:
+        type: object
+        properties:
+          chapter_id:
+            type: string
+            nullable: true
+            description: BookStack chapter identifier.
+          name:
+            type: string
+            nullable: true
+            description: Chapter name.
+          slug:
+            type: string
+            nullable: true
+            description: Chapter slug.
+          book_id:
+            type: string
+            nullable: true
+            description: Parent book identifier.
+          description:
+            type: string
+            nullable: true
+            description: Chapter description.
+          url:
+            type: string
+            nullable: true
+            description: Chapter URL.
+          created_at:
+            type: string
+            nullable: true
+            description: Chapter creation timestamp.
+          updated_at:
+            type: string
+            nullable: true
+            description: Chapter update timestamp.
+          raw:
+            type: object
+            nullable: true
+            description: Original BookStack chapter object.
+    count:
+      type: integer
+      description: Number of returned chapters.
+    total:
+      type: integer
+      nullable: true
+      description: Total available chapters when provided by BookStack.
 parameters:
   - name: book_id
     type: string

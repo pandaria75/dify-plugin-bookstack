@@ -11,6 +11,7 @@ except ImportError:  # pragma: no cover - allows helper imports in unit tests
     ToolInvokeMessage = Any
 
 from bookstack_client import BookStackClient, BookStackError
+from tools.output_payloads import collection_error, collection_success, emit_variable_messages
 
 
 def normalize_shelf_result(raw: dict[str, Any]) -> dict[str, Any]:
@@ -35,15 +36,17 @@ class ListShelvesTool(Tool):
             client = BookStackClient.from_credentials(self.runtime.credentials)
             payload = client.list_shelves(count=count, offset=offset)
         except BookStackError as exc:
-            yield self.create_text_message(f"success=false\nerror={exc}")
+            yield from emit_variable_messages(self, collection_error("shelves", str(exc), include_total=True))
             return
 
         raw_shelves = payload.get("data", [])
-        response = {
-            "shelves": [normalize_shelf_result(item) for item in raw_shelves],
-            "count": len(raw_shelves),
-        }
-        if "total" in payload:
-            response["total"] = payload.get("total")
+        total = payload.get("total") if "total" in payload else None
 
-        yield self.create_json_message(response)
+        yield from emit_variable_messages(
+            self,
+            collection_success(
+                "shelves",
+                [normalize_shelf_result(item) for item in raw_shelves],
+                total=total,
+            )
+        )

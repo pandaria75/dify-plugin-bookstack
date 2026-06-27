@@ -11,6 +11,7 @@ except ImportError:  # pragma: no cover - allows helper imports in unit tests
     ToolInvokeMessage = Any
 
 from bookstack_client import BookStackClient, BookStackError
+from tools.output_payloads import emit_variable_messages, object_error, success_payload
 from tools.page_inputs import normalize_tags
 
 
@@ -32,16 +33,19 @@ class CreatePageTool(Tool):
         chapter_id = tool_parameters.get("chapter_id")
         tags = normalize_tags(tool_parameters.get("tags"))
 
+        def emit_error(error: str) -> Generator[ToolInvokeMessage]:
+            return emit_variable_messages(self, object_error(error, "page_id", "title", "url", "action", "raw"))
+
         if not title:
-            yield self.create_text_message("success=false\nerror=title is required")
+            yield from emit_error("title is required")
             return
 
         if not markdown:
-            yield self.create_text_message("success=false\nerror=markdown is required")
+            yield from emit_error("markdown is required")
             return
 
         if book_id in {None, ""} and chapter_id in {None, ""}:
-            yield self.create_text_message("success=false\nerror=book_id or chapter_id is required")
+            yield from emit_error("book_id or chapter_id is required")
             return
 
         try:
@@ -54,7 +58,7 @@ class CreatePageTool(Tool):
                 chapter_id=chapter_id if chapter_id not in {None, ""} else None,
             )
         except BookStackError as exc:
-            yield self.create_text_message(f"success=false\nerror={exc}")
+            yield from emit_error(str(exc))
             return
 
-        yield self.create_json_message(normalize_created_page_result(raw_page))
+        yield from emit_variable_messages(self, success_payload(**normalize_created_page_result(raw_page)))

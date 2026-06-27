@@ -11,6 +11,7 @@ except ImportError:  # pragma: no cover - allows helper imports in unit tests
     ToolInvokeMessage = Any
 
 from bookstack_client import BookStackClient, BookStackError
+from tools.output_payloads import emit_variable_messages, object_error, success_payload
 from tools.page_inputs import normalize_tags
 
 
@@ -33,15 +34,18 @@ class UpdatePageTool(Tool):
         chapter_id = tool_parameters.get("chapter_id")
         tags = normalize_tags(tool_parameters.get("tags")) if "tags" in tool_parameters else None
 
+        def emit_error(error: str) -> Generator[ToolInvokeMessage]:
+            return emit_variable_messages(self, object_error(error, "page_id", "title", "url", "action", "raw"))
+
         if not page_id:
-            yield self.create_text_message("success=false\nerror=page_id is required")
+            yield from emit_error("page_id is required")
             return
 
         updates: dict[str, Any] = {}
         if title is not None:
             normalized_title = str(title).strip()
             if not normalized_title:
-                yield self.create_text_message("success=false\nerror=title must not be empty")
+                yield from emit_error("title must not be empty")
                 return
             updates["title"] = normalized_title
         if markdown is not None:
@@ -54,14 +58,14 @@ class UpdatePageTool(Tool):
             updates["chapter_id"] = chapter_id
 
         if not updates:
-            yield self.create_text_message("success=false\nerror=at least one update field is required")
+            yield from emit_error("at least one update field is required")
             return
 
         try:
             client = BookStackClient.from_credentials(self.runtime.credentials)
             raw_page = client.update_page(page_id, **updates)
         except BookStackError as exc:
-            yield self.create_text_message(f"success=false\nerror={exc}")
+            yield from emit_error(str(exc))
             return
 
-        yield self.create_json_message(normalize_updated_page_result(raw_page))
+        yield from emit_variable_messages(self, success_payload(**normalize_updated_page_result(raw_page)))

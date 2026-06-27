@@ -9,6 +9,65 @@ description:
     en_US: List accessible BookStack pages and return normalized page metadata.
     zh_Hans: 列出可访问的 BookStack 页面并返回标准化页面元数据。
   llm: List accessible BookStack pages and return normalized page metadata.
+output_schema:
+  type: object
+  properties:
+    success:
+      type: boolean
+      description: Whether listing pages succeeded.
+    error:
+      type: string
+      nullable: true
+      description: Error message when listing pages fails.
+    pages:
+      type: array
+      description: Normalized BookStack pages.
+      items:
+        type: object
+        properties:
+          page_id:
+            type: string
+            nullable: true
+            description: BookStack page identifier.
+          title:
+            type: string
+            nullable: true
+            description: Page title.
+          slug:
+            type: string
+            nullable: true
+            description: Page slug.
+          book_id:
+            type: string
+            nullable: true
+            description: Parent book identifier.
+          chapter_id:
+            type: string
+            nullable: true
+            description: Parent chapter identifier.
+          url:
+            type: string
+            nullable: true
+            description: Page URL.
+          created_at:
+            type: string
+            nullable: true
+            description: Page creation timestamp.
+          updated_at:
+            type: string
+            nullable: true
+            description: Page update timestamp.
+          raw:
+            type: object
+            nullable: true
+            description: Original BookStack page object.
+    count:
+      type: integer
+      description: Number of returned pages.
+    total:
+      type: integer
+      nullable: true
+      description: Total available pages when provided by BookStack.
 parameters:
   - name: count
     type: number
