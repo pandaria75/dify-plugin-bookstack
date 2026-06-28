@@ -48,7 +48,7 @@ More information is covered in the usage guides above.
 
 ## Privacy
 
-The plugin uses credentials provided by the user and connects only to the configured BookStack instance through the Dify runtime. Privacy and credential handling guidance is covered in the usage guides.
+The plugin uses credentials provided by the user and connects only to the configured BookStack instance through the Dify runtime. Privacy and credential handling guidance is covered in the usage guides and [PRIVACY.md](PRIVACY.md).
 
 ## Repository and support
 

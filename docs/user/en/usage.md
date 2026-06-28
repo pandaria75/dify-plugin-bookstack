@@ -214,7 +214,7 @@ The currently documented Datasource path is focused on syncing BookStack content
 ## Privacy And Redaction Notes
 
 - This plugin connects only to the BookStack instance configured by the user.
-- The plugin may read, create, and update BookStack pages, books, and chapters according to the tools you invoke.
+- The plugin may read BookStack books, chapters, and pages, and may create or update BookStack pages according to the tools you invoke.
 - The plugin uses API credentials supplied through Dify plugin credential settings.
 - No content is intended to be sent to any third party beyond the configured BookStack instance and the Dify runtime that executes the plugin.
 - The plugin does not log `token_secret` values.
