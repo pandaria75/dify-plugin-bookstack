@@ -175,7 +175,146 @@ class BookStackClientTestCase(unittest.TestCase):
             url="https://example.test/api/pages",
             timeout=10.0,
             verify=True,
-            params={"book_id": "7", "chapter_id": "11", "count": 100, "offset": 200},
+            params={
+                "filter[book_id:eq]": "7",
+                "filter[chapter_id:eq]": "11",
+                "count": 100,
+                "offset": 200,
+            },
+        )
+
+    def test_list_pages_omits_filter_params_when_filters_not_provided(self):
+        response = FakeResponse(200, content=b'{"data": []}', json_value={"data": []})
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            payload = client.list_pages(count=100, offset=200)
+
+        self.assertEqual(payload, {"data": []})
+        fake_session.request.assert_called_once_with(
+            method="GET",
+            url="https://example.test/api/pages",
+            timeout=10.0,
+            verify=True,
+            params={"count": 100, "offset": 200},
+        )
+
+    def test_list_chapters_passes_book_scope_and_pagination(self):
+        response = FakeResponse(200, content=b'{"data": []}', json_value={"data": []})
+        fake_session = FakeSession(response)
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch("bookstack_client.requests.Session", return_value=fake_session):
+            payload = client.list_chapters(book_id="7", count=25, offset=50)
+
+        self.assertEqual(payload, {"data": []})
+        fake_session.request.assert_called_once_with(
+            method="GET",
+            url="https://example.test/api/chapters",
+            timeout=10.0,
+            verify=True,
+            params={"book_id": "7", "count": 25, "offset": 50},
+        )
+
+    def test_find_books_uses_exact_name_filter(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(BookStackClient, "_request", return_value={"data": [], "total": 0}) as request:
+            result = client.find_books("Operations", match="exact", count=25, offset=50)
+
+        request.assert_called_once_with(
+            "GET",
+            "books",
+            params={"filter[name:eq]": "Operations", "count": 25, "offset": 50},
+        )
+        self.assertEqual(result, {"data": [], "total": 0})
+
+    def test_find_shelves_uses_like_name_filter(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(BookStackClient, "_request", return_value={"data": []}) as request:
+            result = client.find_shelves("Engineering", match="like")
+
+        request.assert_called_once_with(
+            "GET",
+            "shelves",
+            params={"filter[name:like]": "%Engineering%"},
+        )
+        self.assertEqual(result, {"data": []})
+
+    def test_find_chapters_uses_exact_name_filter_and_book_scope(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(BookStackClient, "_request", return_value={"data": [], "total": 0}) as request:
+            result = client.find_chapters("Runbooks", match="exact", book_id="7", count=25, offset=50)
+
+        request.assert_called_once_with(
+            "GET",
+            "chapters",
+            params={"filter[name:eq]": "Runbooks", "filter[book_id:eq]": "7", "count": 25, "offset": 50},
+        )
+        self.assertEqual(result, {"data": [], "total": 0})
+
+    def test_find_pages_uses_like_name_filter_with_book_and_chapter_scope(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(BookStackClient, "_request", return_value={"data": []}) as request:
+            result = client.find_pages("On Call", match="like", book_id="7", chapter_id="11")
+
+        request.assert_called_once_with(
+            "GET",
+            "pages",
+            params={
+                "filter[name:like]": "%On Call%",
+                "filter[book_id:eq]": "7",
+                "filter[chapter_id:eq]": "11",
+            },
+        )
+        self.assertEqual(result, {"data": []})
+
+    def test_find_helpers_reject_invalid_match_values(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with self.assertRaisesRegex(ValueError, "match must be one of: exact, like"):
+            client.find_books("Operations", match="prefix")
+
+        with self.assertRaisesRegex(ValueError, "match must be one of: exact, like"):
+            client.find_pages("On Call", match="prefix")
+
+    def test_search_pages_rejects_non_object_results(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(BookStackClient, "_request", return_value={"data": ["not-an-object"]}):
+            with self.assertRaisesRegex(InvalidResponseError, "Invalid BookStack response"):
+                client.search_pages("ops")
+
+    def test_search_content_filters_by_types_and_preserves_total(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(
+            BookStackClient,
+            "_request",
+            return_value={
+                "data": [
+                    {"id": 1, "type": "page", "name": "Runbook"},
+                    {"id": 2, "type": "book", "name": "Operations"},
+                    {"id": 3, "type": "bookshelf", "name": "Engineering"},
+                ],
+                "total": 9,
+            },
+        ):
+            result = client.search_content("ops", types=["book", "bookshelf"])
+
+        self.assertEqual(
+            result,
+            {
+                "data": [
+                    {"id": 2, "type": "book", "name": "Operations"},
+                    {"id": 3, "type": "bookshelf", "name": "Engineering"},
+                ],
+                "total": 9,
+            },
         )
 
     def test_create_page_404_uses_book_or_chapter_specific_not_found(self):

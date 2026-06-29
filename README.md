@@ -1,6 +1,6 @@
 # BookStack Plugin for Dify
 
-BookStack Plugin for Dify connects Dify workflows and agents to self-hosted BookStack knowledge bases. Dify handles AI content generation, approval, and orchestration; BookStack stores the published documentation as a source of truth. This plugin bridges the two, enabling automated document publishing, reading, and synchronization from within Dify AI applications.
+BookStack Plugin for Dify connects Dify workflows and agents to self-hosted BookStack knowledge bases. Dify handles AI content generation, approval, and orchestration; BookStack stores the published documentation as a source of truth. This plugin bridges the two, enabling BookStack content lookup, search, export, publishing, and related support flows from within Dify AI applications.
 
 ## Current implemented features
 
@@ -8,14 +8,20 @@ Implemented Dify Tool plugin features:
 
 - `validate_credentials`
 - `search_pages`
+- `search_content`
 - `get_page`
+- `export_page_markdown`
 - `create_page`
 - `update_page`
 - `publish_page`
 - `list_books`
+- `find_books`
 - `list_chapters`
+- `find_chapters`
 - `list_shelves`
+- `find_shelves`
 - `list_pages`
+- `find_pages`
 
 Current repository direction:
 
@@ -42,7 +48,7 @@ Recommended first step:
 1. Save provider credentials.
 2. Run `validate_credentials`.
 3. Confirm the provider can reach the target BookStack instance.
-4. Use the implemented page and listing tools as needed, and refer to the linked user docs for details.
+4. Use the implemented search, lookup, export, page, and listing tools as needed, and refer to the linked user docs for details.
 
 More information is covered in the usage guides above.
 

@@ -66,6 +66,24 @@ class SearchPagesClientTestCase(unittest.TestCase):
             with self.assertRaisesRegex(InvalidResponseError, "Invalid BookStack response"):
                 client.search_pages("ops")
 
+    def test_search_pages_remains_page_only(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(
+            BookStackClient,
+            "_request",
+            return_value={
+                "data": [
+                    {"id": 1, "name": "Page A", "type": "page"},
+                    {"id": 2, "name": "Shelf A", "type": "bookshelf"},
+                ],
+                "total": 2,
+            },
+        ):
+            results = client.search_pages("ops")
+
+        self.assertEqual(results, [{"id": 1, "name": "Page A", "type": "page"}])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -72,19 +72,30 @@ Recommended first steps after saving credentials:
 
 - `validate_credentials`
 - `search_pages`
+- `search_content`
 - `get_page`
+- `export_page_markdown`
 - `create_page`
 - `update_page`
 - `publish_page`
 - `list_books`
+- `find_books`
 - `list_chapters`
+- `find_chapters`
 - `list_shelves`
+- `find_shelves`
 - `list_pages`
+- `find_pages`
 
 ### Important usage notes
 
 - `publish_page` supports create-or-update behavior.
+- `search_pages` remains the page-focused search tool.
+- `search_content` is the broader global search tool and can filter across supported content types.
+- `find_books`, `find_chapters`, `find_pages`, and `find_shelves` are structured name-based lookup tools with `match=like|exact`.
 - `list_books`, `list_chapters`, `list_shelves`, and `list_pages` are support tools for locating destinations and content.
+- `list_pages` also supports optional `book_id` and `chapter_id` filtering.
+- `export_page_markdown` returns page Markdown for export-oriented workflows.
 - Delete or archive operations are not part of the current plugin scope.
 - Do not describe unlisted or planned tools as available.
 
@@ -93,8 +104,8 @@ Recommended first steps after saving credentials:
 1. Import the plugin into Dify.
 2. Configure `base_url`, `token_id`, and `token_secret`.
 3. Run `validate_credentials`.
-4. Use `list_books` and `list_chapters` to find the destinations you can work with.
-5. Use `search_pages` or `get_page` when you need to inspect existing content.
+4. Use `find_books`, `find_chapters`, `find_shelves`, or the list tools to find the destinations you can work with.
+5. Use `search_pages`, `search_content`, `get_page`, or `export_page_markdown` when you need to inspect or export existing content.
 6. Use `create_page`, `update_page`, or `publish_page` only after choosing the destination.
 
 This order keeps the current Tool-first workflow simple: install, connect, validate, inspect targets, then write content.

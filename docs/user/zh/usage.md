@@ -70,19 +70,30 @@
 
 - `validate_credentials`
 - `search_pages`
+- `search_content`
 - `get_page`
+- `export_page_markdown`
 - `create_page`
 - `update_page`
 - `publish_page`
 - `list_books`
+- `find_books`
 - `list_chapters`
+- `find_chapters`
 - `list_shelves`
+- `find_shelves`
 - `list_pages`
+- `find_pages`
 
 ### 重要使用说明
 
 - `publish_page` 支持 create-or-update 行为。
+- `search_pages` 仍然是面向页面的搜索工具。
+- `search_content` 是更通用的全局搜索工具，可按支持的内容类型过滤。
+- `find_books`、`find_chapters`、`find_pages` 和 `find_shelves` 是按名称查找的结构化工具，支持 `match=like|exact`。
 - `list_books`、`list_chapters`、`list_shelves` 和 `list_pages` 是用于定位目标与内容的支持工具。
+- `list_pages` 还支持可选的 `book_id` 和 `chapter_id` 过滤。
+- `export_page_markdown` 用于导出页面 Markdown 内容。
 - 删除或归档操作不属于当前插件范围。
 - 不要将未列出或仍在计划中的工具描述为已可用。
 
@@ -91,8 +102,8 @@
 1. 将插件导入 Dify。
 2. 配置 `base_url`、`token_id` 和 `token_secret`。
 3. 运行 `validate_credentials`。
-4. 使用 `list_books` 和 `list_chapters` 找到可用的目标位置。
-5. 需要检查现有内容时，使用 `search_pages` 或 `get_page`。
+4. 使用 `find_books`、`find_chapters`、`find_shelves` 或各类 list 工具找到可用的目标位置。
+5. 需要检查或导出现有内容时，使用 `search_pages`、`search_content`、`get_page` 或 `export_page_markdown`。
 6. 选好目标后，再使用 `create_page`、`update_page` 或 `publish_page`。
 
 按照这个顺序操作，可以保持当前 Tool-first 的主流程：先安装、再连接、先验证、后写入。

@@ -51,6 +51,13 @@ def _invalid_response() -> InvalidResponseError:
     return InvalidResponseError("Invalid BookStack response")
 
 
+def normalize_find_match(value: Any) -> str:
+    match = str(value or "").strip().lower()
+    if match not in {"exact", "like"}:
+        raise ValueError("match must be one of: exact, like")
+    return match
+
+
 @dataclass(slots=True)
 class BookStackClient:
     base_url: str
@@ -176,17 +183,85 @@ class BookStackClient:
     def validate_credentials(self) -> None:
         self._request("GET", "system")
 
-    def search_pages(self, query: str) -> list[dict[str, Any]]:
-        payload = self._request("GET", "search", params={"query": query})
-        data = payload.get("data")
+    @staticmethod
+    def _require_object_list(value: Any) -> list[dict[str, Any]]:
+        if not isinstance(value, list):
+            raise _invalid_response()
 
-        if not isinstance(data, list):
-            raise InvalidResponseError("Invalid BookStack response")
+        items: list[dict[str, Any]] = []
+        for item in value:
+            if not isinstance(item, dict):
+                raise _invalid_response()
+            items.append(item)
+
+        return items
+
+    @staticmethod
+    def _build_list_params(**params: Any) -> dict[str, Any]:
+        return {key: value for key, value in params.items() if value is not None}
+
+    @staticmethod
+    def _build_name_filter_params(name: Any, match: str, **params: Any) -> dict[str, Any]:
+        match = normalize_find_match(match)
+        if match == "exact":
+            filter_key = "filter[name:eq]"
+            filter_value = name
+        else:
+            filter_key = "filter[name:like]"
+            filter_value = f"%{name}%"
+
+        return BookStackClient._build_list_params(**{filter_key: filter_value}, **params)
+
+    def _list_endpoint(
+        self,
+        path: str,
+        **params: Any,
+    ) -> dict[str, Any]:
+        filtered_params = self._build_list_params(**params)
+
+        request_kwargs: dict[str, Any] = {}
+        if filtered_params:
+            request_kwargs["params"] = filtered_params
+
+        payload = self._request("GET", path, **request_kwargs)
+        self._require_object_list(payload.get("data"))
+        return payload
+
+    def _search(self, query: str) -> dict[str, Any]:
+        payload = self._request("GET", "search", params={"query": query})
+        self._require_object_list(payload.get("data"))
+        return payload
+
+    def search_content(
+        self,
+        query: str,
+        *,
+        types: list[str] | None = None,
+    ) -> dict[str, Any]:
+        payload = self._search(query)
+        data = payload.get("data", [])
+
+        if types is None:
+            return payload
+
+        allowed_types = set(types)
+        filtered_data: list[dict[str, Any]] = []
+        for item in data:
+            item_type = item.get("type")
+            if item_type in allowed_types:
+                filtered_data.append(item)
+
+        return {
+            **payload,
+            "data": filtered_data,
+        }
+
+    def search_pages(self, query: str) -> list[dict[str, Any]]:
+        payload = self._search(query)
+        data = payload.get("data", [])
 
         page_results: list[dict[str, Any]] = []
         for item in data:
-            if not isinstance(item, dict):
-                raise InvalidResponseError("Invalid BookStack response")
             if item.get("type") not in {None, "page"}:
                 continue
             page_results.append(item)
@@ -194,42 +269,84 @@ class BookStackClient:
         return page_results
 
     def list_books(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
-        params: dict[str, Any] = {}
-        if count is not None:
-            params["count"] = count
-        if offset is not None:
-            params["offset"] = offset
-
-        request_kwargs: dict[str, Any] = {}
-        if params:
-            request_kwargs["params"] = params
-
-        payload = self._request("GET", "books", **request_kwargs)
-        data = payload.get("data")
-
-        if not isinstance(data, list):
-            raise InvalidResponseError("Invalid BookStack response")
-
-        return payload
+        return self._list_endpoint("books", count=count, offset=offset)
 
     def list_shelves(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
-        params: dict[str, Any] = {}
-        if count is not None:
-            params["count"] = count
-        if offset is not None:
-            params["offset"] = offset
+        return self._list_endpoint("shelves", count=count, offset=offset)
 
-        request_kwargs: dict[str, Any] = {}
-        if params:
-            request_kwargs["params"] = params
+    def find_books(
+        self,
+        name: Any,
+        *,
+        match: str,
+        count: Any | None = None,
+        offset: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._list_endpoint(
+            "books",
+            **self._build_name_filter_params(name, match, count=count, offset=offset),
+        )
 
-        payload = self._request("GET", "shelves", **request_kwargs)
-        data = payload.get("data")
+    def find_shelves(
+        self,
+        name: Any,
+        *,
+        match: str,
+        count: Any | None = None,
+        offset: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._list_endpoint(
+            "shelves",
+            **self._build_name_filter_params(name, match, count=count, offset=offset),
+        )
 
-        if not isinstance(data, list):
-            raise InvalidResponseError("Invalid BookStack response")
+    def find_chapters(
+        self,
+        name: Any,
+        *,
+        match: str,
+        book_id: Any | None = None,
+        count: Any | None = None,
+        offset: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._list_endpoint(
+            "chapters",
+            **self._build_name_filter_params(
+                name,
+                match,
+                **self._build_list_params(
+                    **{"filter[book_id:eq]": book_id},
+                    count=count,
+                    offset=offset,
+                ),
+            ),
+        )
 
-        return payload
+    def find_pages(
+        self,
+        name: Any,
+        *,
+        match: str,
+        book_id: Any | None = None,
+        chapter_id: Any | None = None,
+        count: Any | None = None,
+        offset: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._list_endpoint(
+            "pages",
+            **self._build_name_filter_params(
+                name,
+                match,
+                **self._build_list_params(
+                    **{
+                        "filter[book_id:eq]": book_id,
+                        "filter[chapter_id:eq]": chapter_id,
+                    },
+                    count=count,
+                    offset=offset,
+                ),
+            ),
+        )
 
     def list_pages(
         self,
@@ -240,9 +357,9 @@ class BookStackClient:
     ) -> dict[str, Any]:
         params: dict[str, Any] = {}
         if book_id is not None:
-            params["book_id"] = book_id
+            params["filter[book_id:eq]"] = book_id
         if chapter_id is not None:
-            params["chapter_id"] = chapter_id
+            params["filter[chapter_id:eq]"] = chapter_id
         if count is not None:
             params["count"] = count
         if offset is not None:
