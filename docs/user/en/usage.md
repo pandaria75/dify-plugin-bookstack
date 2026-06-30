@@ -80,12 +80,23 @@ Recommended first steps after saving credentials:
 - `publish_page`
 - `list_books`
 - `find_books`
+- `get_book`
+- `create_book`
+- `update_book`
 - `list_chapters`
 - `find_chapters`
+- `get_chapter`
+- `create_chapter`
+- `update_chapter`
 - `list_shelves`
 - `find_shelves`
+- `get_shelf`
+- `create_shelf`
+- `update_shelf`
 - `list_pages`
 - `find_pages`
+- `list_tag_names`
+- `list_tag_values`
 
 ### Important usage notes
 
@@ -93,7 +104,10 @@ Recommended first steps after saving credentials:
 - `search_pages` remains the page-focused search tool.
 - `search_content` is the broader global search tool and can filter across supported content types.
 - `find_books`, `find_chapters`, `find_pages`, and `find_shelves` are structured name-based lookup tools with `match=like|exact`.
+- `get_book`, `get_chapter`, and `get_shelf` read one resource by ID.
+- `create_book`, `create_chapter`, `create_shelf`, `update_book`, `update_chapter`, and `update_shelf` add non-delete CRUD coverage for those resources.
 - `list_books`, `list_chapters`, `list_shelves`, and `list_pages` are support tools for locating destinations and content.
+- `list_tag_names` and `list_tag_values` are discovery-only tag helpers; they do not create, update, or delete tags.
 - `list_pages` also supports optional `book_id` and `chapter_id` filtering.
 - `export_page_markdown` returns page Markdown for export-oriented workflows.
 - Delete or archive operations are not part of the current plugin scope.
@@ -104,9 +118,9 @@ Recommended first steps after saving credentials:
 1. Import the plugin into Dify.
 2. Configure `base_url`, `token_id`, and `token_secret`.
 3. Run `validate_credentials`.
-4. Use `find_books`, `find_chapters`, `find_shelves`, or the list tools to find the destinations you can work with.
-5. Use `search_pages`, `search_content`, `get_page`, or `export_page_markdown` when you need to inspect or export existing content.
-6. Use `create_page`, `update_page`, or `publish_page` only after choosing the destination.
+4. Use `find_books`, `find_chapters`, `find_shelves`, `get_book`, `get_chapter`, `get_shelf`, or the list tools to find and inspect destinations you can work with.
+5. Use `search_pages`, `search_content`, `get_page`, `export_page_markdown`, `list_tag_names`, or `list_tag_values` when you need to inspect existing content or discover tag vocabulary.
+6. Use `create_book`, `update_book`, `create_chapter`, `update_chapter`, `create_shelf`, `update_shelf`, `create_page`, `update_page`, or `publish_page` only after choosing the destination.
 
 This order keeps the current Tool-first workflow simple: install, connect, validate, inspect targets, then write content.
 
@@ -191,6 +205,7 @@ Prefer `page_id` whenever your workflow already knows the stable target page.
 - `Permission denied`
 - `Book not found`
 - `Chapter not found`
+- `Shelf not found`
 - `Page not found`
 - `BookStack API unavailable`
 - `Invalid BookStack response`
@@ -205,7 +220,7 @@ Prefer `page_id` whenever your workflow already knows the stable target page.
 
 ### Write-tool caution
 
-When using `create_page`, `update_page`, or `publish_page`, verify the target book, chapter, or page identifiers before retrying.
+When using `create_book`, `update_book`, `create_chapter`, `update_chapter`, `create_shelf`, `update_shelf`, `create_page`, `update_page`, or `publish_page`, verify the target identifiers and intended destination before retrying.
 
 ## Datasource Status
 
@@ -225,7 +240,7 @@ The currently documented Datasource path is focused on syncing BookStack content
 ## Privacy And Redaction Notes
 
 - This plugin connects only to the BookStack instance configured by the user.
-- The plugin may read BookStack books, chapters, and pages, and may create or update BookStack pages according to the tools you invoke.
+- The plugin may read BookStack books, chapters, shelves, and pages, and may create or update supported books, chapters, shelves, and pages according to the tools you invoke.
 - The plugin uses API credentials supplied through Dify plugin credential settings.
 - No content is intended to be sent to any third party beyond the configured BookStack instance and the Dify runtime that executes the plugin.
 - The plugin does not log `token_secret` values.

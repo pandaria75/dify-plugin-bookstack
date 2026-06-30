@@ -1,6 +1,6 @@
 # BookStack Plugin for Dify
 
-BookStack Plugin for Dify connects Dify workflows and agents to self-hosted BookStack knowledge bases. Dify handles AI content generation, approval, and orchestration; BookStack stores the published documentation as a source of truth. This plugin bridges the two, enabling BookStack content lookup, search, export, publishing, and related support flows from within Dify AI applications.
+BookStack Plugin for Dify connects Dify workflows and agents to self-hosted BookStack knowledge bases. Dify handles AI content generation, approval, and orchestration; BookStack stores the published documentation as a source of truth. This plugin bridges the two, enabling BookStack content lookup, search, export, non-destructive CRUD support, publishing, and related support flows from within Dify AI applications.
 
 ## Current implemented features
 
@@ -16,12 +16,29 @@ Implemented Dify Tool plugin features:
 - `publish_page`
 - `list_books`
 - `find_books`
+- `get_book`
+- `create_book`
+- `update_book`
 - `list_chapters`
 - `find_chapters`
+- `get_chapter`
+- `create_chapter`
+- `update_chapter`
 - `list_shelves`
 - `find_shelves`
+- `get_shelf`
+- `create_shelf`
+- `update_shelf`
 - `list_pages`
 - `find_pages`
+- `list_tag_names`
+- `list_tag_values`
+
+Current tool-surface notes:
+
+- No delete or archive tools are implemented.
+- Tag support in this slice is discovery-only via `list_tag_names` and `list_tag_values`.
+- Tool plugin remains the primary path; Datasource work is separate and still broader follow-up scope.
 
 Current repository direction:
 
@@ -48,7 +65,7 @@ Recommended first step:
 1. Save provider credentials.
 2. Run `validate_credentials`.
 3. Confirm the provider can reach the target BookStack instance.
-4. Use the implemented search, lookup, export, page, and listing tools as needed, and refer to the linked user docs for details.
+4. Use the implemented search, lookup, export, listing, tag-discovery, and non-delete create/update tools as needed, and refer to the linked user docs for details.
 
 More information is covered in the usage guides above.
 

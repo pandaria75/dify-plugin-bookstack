@@ -31,6 +31,10 @@ class PageNotFoundError(BookStackError):
     pass
 
 
+class ShelfNotFoundError(BookStackError):
+    pass
+
+
 class ServiceUnavailableError(BookStackError):
     pass
 
@@ -215,6 +219,9 @@ class BookStackClient:
     def _list_endpoint(
         self,
         path: str,
+        *,
+        not_found_error: type[BookStackError] | None = None,
+        not_found_message: str | None = None,
         **params: Any,
     ) -> dict[str, Any]:
         filtered_params = self._build_list_params(**params)
@@ -222,6 +229,10 @@ class BookStackClient:
         request_kwargs: dict[str, Any] = {}
         if filtered_params:
             request_kwargs["params"] = filtered_params
+        if not_found_error is not None:
+            request_kwargs["not_found_error"] = not_found_error
+        if not_found_message is not None:
+            request_kwargs["not_found_message"] = not_found_message
 
         payload = self._request("GET", path, **request_kwargs)
         self._require_object_list(payload.get("data"))
@@ -383,31 +394,16 @@ class BookStackClient:
         count: Any | None = None,
         offset: Any | None = None,
     ) -> dict[str, Any]:
-        params: dict[str, Any] = {}
-        if book_id is not None:
-            params["book_id"] = book_id
-        if count is not None:
-            params["count"] = count
-        if offset is not None:
-            params["offset"] = offset
-
-        request_kwargs: dict[str, Any] = {}
-        if params:
-            request_kwargs["params"] = params
-
-        payload = self._request(
-            "GET",
+        return self._list_endpoint(
             "chapters",
             not_found_error=BookNotFoundError,
             not_found_message="Book not found",
-            **request_kwargs,
+            **self._build_list_params(
+                **{"filter[book_id:eq]": book_id},
+                count=count,
+                offset=offset,
+            ),
         )
-        data = payload.get("data")
-
-        if not isinstance(data, list):
-            raise InvalidResponseError("Invalid BookStack response")
-
-        return payload
 
     def get_page(self, page_id: Any) -> dict[str, Any]:
         return self._request(
@@ -415,6 +411,30 @@ class BookStackClient:
             f"pages/{page_id}",
             not_found_error=PageNotFoundError,
             not_found_message="Page not found",
+        )
+
+    def get_book(self, book_id: Any) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            f"books/{book_id}",
+            not_found_error=BookNotFoundError,
+            not_found_message="Book not found",
+        )
+
+    def get_chapter(self, chapter_id: Any) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            f"chapters/{chapter_id}",
+            not_found_error=ChapterNotFoundError,
+            not_found_message="Chapter not found",
+        )
+
+    def get_shelf(self, shelf_id: Any) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            f"shelves/{shelf_id}",
+            not_found_error=ShelfNotFoundError,
+            not_found_message="Shelf not found",
         )
 
     @staticmethod
@@ -440,6 +460,61 @@ class BookStackClient:
             payload["chapter_id"] = chapter_id
 
         return payload
+
+    @staticmethod
+    def _build_resource_payload(**fields: Any) -> dict[str, Any]:
+        return {key: value for key, value in fields.items() if value is not None}
+
+    @staticmethod
+    def _build_book_payload(
+        *,
+        name: Any | None = None,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        tags: Any | None = None,
+    ) -> dict[str, Any]:
+        return BookStackClient._build_resource_payload(
+            name=name,
+            description=description,
+            description_html=description_html,
+            tags=tags,
+        )
+
+    @staticmethod
+    def _build_chapter_payload(
+        *,
+        book_id: Any | None = None,
+        name: Any | None = None,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        tags: Any | None = None,
+        priority: Any | None = None,
+    ) -> dict[str, Any]:
+        return BookStackClient._build_resource_payload(
+            book_id=book_id,
+            name=name,
+            description=description,
+            description_html=description_html,
+            tags=tags,
+            priority=priority,
+        )
+
+    @staticmethod
+    def _build_shelf_payload(
+        *,
+        name: Any | None = None,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        books: Any | None = None,
+        tags: Any | None = None,
+    ) -> dict[str, Any]:
+        return BookStackClient._build_resource_payload(
+            name=name,
+            description=description,
+            description_html=description_html,
+            books=books,
+            tags=tags,
+        )
 
     def create_page(
         self,
@@ -497,3 +572,152 @@ class BookStackClient:
             not_found_error=PageNotFoundError,
             not_found_message="Page not found",
         )
+
+    def create_book(
+        self,
+        *,
+        name: Any,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        tags: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            "books",
+            json=self._build_book_payload(
+                name=name,
+                description=description,
+                description_html=description_html,
+                tags=tags,
+            ),
+        )
+
+    def update_book(
+        self,
+        book_id: Any,
+        *,
+        name: Any | None = None,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        tags: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._request(
+            "PUT",
+            f"books/{book_id}",
+            json=self._build_book_payload(
+                name=name,
+                description=description,
+                description_html=description_html,
+                tags=tags,
+            ),
+            not_found_error=BookNotFoundError,
+            not_found_message="Book not found",
+        )
+
+    def create_chapter(
+        self,
+        *,
+        book_id: Any,
+        name: Any,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        tags: Any | None = None,
+        priority: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            "chapters",
+            json=self._build_chapter_payload(
+                book_id=book_id,
+                name=name,
+                description=description,
+                description_html=description_html,
+                tags=tags,
+                priority=priority,
+            ),
+            not_found_error=BookNotFoundError,
+            not_found_message="Book not found",
+        )
+
+    def update_chapter(
+        self,
+        chapter_id: Any,
+        *,
+        book_id: Any | None = None,
+        name: Any | None = None,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        tags: Any | None = None,
+        priority: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._request(
+            "PUT",
+            f"chapters/{chapter_id}",
+            json=self._build_chapter_payload(
+                book_id=book_id,
+                name=name,
+                description=description,
+                description_html=description_html,
+                tags=tags,
+                priority=priority,
+            ),
+            not_found_error=ChapterNotFoundError,
+            not_found_message="Chapter not found",
+        )
+
+    def create_shelf(
+        self,
+        *,
+        name: Any,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        books: Any | None = None,
+        tags: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._request(
+            "POST",
+            "shelves",
+            json=self._build_shelf_payload(
+                name=name,
+                description=description,
+                description_html=description_html,
+                books=books,
+                tags=tags,
+            ),
+        )
+
+    def update_shelf(
+        self,
+        shelf_id: Any,
+        *,
+        name: Any | None = None,
+        description: Any | None = None,
+        description_html: Any | None = None,
+        books: Any | None = None,
+        tags: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._request(
+            "PUT",
+            f"shelves/{shelf_id}",
+            json=self._build_shelf_payload(
+                name=name,
+                description=description,
+                description_html=description_html,
+                books=books,
+                tags=tags,
+            ),
+            not_found_error=ShelfNotFoundError,
+            not_found_message="Shelf not found",
+        )
+
+    def list_tag_names(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
+        return self._list_endpoint("tags/names", count=count, offset=offset)
+
+    def list_tag_values(
+        self,
+        name: Any,
+        *,
+        count: Any | None = None,
+        offset: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._list_endpoint("tags/values-for-name", name=name, count=count, offset=offset)

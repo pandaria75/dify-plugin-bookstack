@@ -363,7 +363,7 @@ Add project-specific agent instructions here.
 ## BookStack Integration Rules
 
 - `BookStackClient` is the shared HTTP wrapper; put base URL normalization, `/api` prefixing, auth header, timeout, SSL, and error mapping there.
-- Treat these errors as user-facing contract terms: `Invalid credentials`, `Permission denied`, `Book not found`, `Chapter not found`, `Page not found`, `BookStack API unavailable`, `Invalid BookStack response`.
+- Treat these errors as user-facing contract terms: `Invalid credentials`, `Permission denied`, `Book not found`, `Chapter not found`, `Shelf not found`, `Page not found`, `BookStack API unavailable`, `Invalid BookStack response`.
 - Never log `token_secret` or echo raw authorization headers.
 - Tests should mock BookStack HTTP calls; do not require a live BookStack instance unless explicitly requested.
 - Until tests exist, report validation as `NOT_RUN` with the reason instead of inventing live BookStack checks.

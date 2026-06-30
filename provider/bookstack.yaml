@@ -74,8 +74,19 @@ tools:
   - tools/find_pages.yaml
   - tools/list_chapters.yaml
   - tools/find_chapters.yaml
+  - tools/list_tag_names.yaml
+  - tools/list_tag_values.yaml
+  - tools/get_book.yaml
+  - tools/get_chapter.yaml
+  - tools/get_shelf.yaml
   - tools/get_page.yaml
+  - tools/create_book.yaml
+  - tools/create_chapter.yaml
+  - tools/create_shelf.yaml
   - tools/export_page_markdown.yaml
+  - tools/update_book.yaml
+  - tools/update_chapter.yaml
+  - tools/update_shelf.yaml
   - tools/create_page.yaml
   - tools/update_page.yaml
   - tools/publish_page.yaml

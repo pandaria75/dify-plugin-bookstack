@@ -13,6 +13,7 @@ from bookstack_client import (
     InvalidResponseError,
     PageNotFoundError,
     PermissionDeniedError,
+    ShelfNotFoundError,
     ServiceUnavailableError,
 )
 
@@ -152,6 +153,22 @@ class BookStackClientTestCase(unittest.TestCase):
             with self.assertRaisesRegex(PageNotFoundError, "Page not found"):
                 client.get_page("123")
 
+    def test_get_resource_methods_use_resource_specific_not_found_errors(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        cases = [
+            (client.get_book, ("7",), BookNotFoundError, "Book not found"),
+            (client.get_chapter, ("11",), ChapterNotFoundError, "Chapter not found"),
+            (client.get_shelf, ("13",), ShelfNotFoundError, "Shelf not found"),
+        ]
+
+        for method, args, error_type, message in cases:
+            with self.subTest(method=method.__name__):
+                fake_session = FakeSession(FakeResponse(404, content=b"{}"))
+                with patch("bookstack_client.requests.Session", return_value=fake_session):
+                    with self.assertRaisesRegex(error_type, message):
+                        method(*args)
+
     def test_list_chapters_404_uses_book_not_found(self):
         response = FakeResponse(404, content=b"{}")
         fake_session = FakeSession(response)
@@ -214,7 +231,7 @@ class BookStackClientTestCase(unittest.TestCase):
             url="https://example.test/api/chapters",
             timeout=10.0,
             verify=True,
-            params={"book_id": "7", "count": 25, "offset": 50},
+            params={"filter[book_id:eq]": "7", "count": 25, "offset": 50},
         )
 
     def test_find_books_uses_exact_name_filter(self):
@@ -331,6 +348,127 @@ class BookStackClientTestCase(unittest.TestCase):
                 with patch("bookstack_client.requests.Session", return_value=fake_session):
                     with self.assertRaisesRegex(error_type, message):
                         client.create_page(**kwargs)
+
+    def test_create_and_update_resource_methods_use_expected_request_shape(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        cases = [
+            (
+                client.create_book,
+                [],
+                {"name": "Operations", "description": "Docs", "description_html": "<p>Docs</p>", "tags": [{"name": "env", "value": "prod"}]},
+                ("POST", "books"),
+                {
+                    "json": {
+                        "name": "Operations",
+                        "description": "Docs",
+                        "description_html": "<p>Docs</p>",
+                        "tags": [{"name": "env", "value": "prod"}],
+                    }
+                },
+            ),
+            (
+                client.update_book,
+                ["7"],
+                {"name": "Operations v2", "tags": []},
+                ("PUT", "books/7"),
+                {"json": {"name": "Operations v2", "tags": []}, "not_found_error": BookNotFoundError, "not_found_message": "Book not found"},
+            ),
+            (
+                client.create_chapter,
+                [],
+                {"book_id": "7", "name": "Planning", "description": "Desc", "description_html": "<p>Desc</p>", "tags": [{"name": "topic", "value": "plan"}], "priority": 10},
+                ("POST", "chapters"),
+                {
+                    "json": {
+                        "book_id": "7",
+                        "name": "Planning",
+                        "description": "Desc",
+                        "description_html": "<p>Desc</p>",
+                        "tags": [{"name": "topic", "value": "plan"}],
+                        "priority": 10,
+                    },
+                    "not_found_error": BookNotFoundError,
+                    "not_found_message": "Book not found",
+                },
+            ),
+            (
+                client.update_chapter,
+                ["11"],
+                {"book_id": "8", "name": "Research", "priority": 20},
+                ("PUT", "chapters/11"),
+                {
+                    "json": {"book_id": "8", "name": "Research", "priority": 20},
+                    "not_found_error": ChapterNotFoundError,
+                    "not_found_message": "Chapter not found",
+                },
+            ),
+            (
+                client.create_shelf,
+                [],
+                {"name": "Publishing", "description": "Desc", "description_html": "<p>Desc</p>", "books": [1, 2], "tags": [{"name": "kind", "value": "published"}]},
+                ("POST", "shelves"),
+                {
+                    "json": {
+                        "name": "Publishing",
+                        "description": "Desc",
+                        "description_html": "<p>Desc</p>",
+                        "books": [1, 2],
+                        "tags": [{"name": "kind", "value": "published"}],
+                    }
+                },
+            ),
+            (
+                client.update_shelf,
+                ["13"],
+                {"name": "Publishing v2", "books": [2, 1]},
+                ("PUT", "shelves/13"),
+                {
+                    "json": {"name": "Publishing v2", "books": [2, 1]},
+                    "not_found_error": ShelfNotFoundError,
+                    "not_found_message": "Shelf not found",
+                },
+            ),
+        ]
+
+        for method, args, kwargs, expected_call_args, expected_call_kwargs in cases:
+            with self.subTest(method=method.__name__):
+                with patch.object(BookStackClient, "_request", return_value={"id": 1}) as request:
+                    result = method(*args, **kwargs)
+
+                request.assert_called_once_with(*expected_call_args, **expected_call_kwargs)
+                self.assertEqual(result, {"id": 1})
+
+    def test_tag_discovery_methods_use_expected_paths_and_params(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(BookStackClient, "_request", return_value={"data": [], "total": 0}) as request:
+            names = client.list_tag_names(count=100, offset=200)
+            values = client.list_tag_values("doc_id", count=50, offset=10)
+
+        self.assertEqual(names, {"data": [], "total": 0})
+        self.assertEqual(values, {"data": [], "total": 0})
+        self.assertEqual(
+            request.call_args_list,
+            [
+                unittest.mock.call("GET", "tags/names", params={"count": 100, "offset": 200}),
+                unittest.mock.call("GET", "tags/values-for-name", params={"name": "doc_id", "count": 50, "offset": 10}),
+            ],
+        )
+
+    def test_build_resource_payload_helpers_omit_none_fields(self):
+        self.assertEqual(
+            BookStackClient._build_book_payload(name="Operations", description=None, description_html=None, tags=[]),
+            {"name": "Operations", "tags": []},
+        )
+        self.assertEqual(
+            BookStackClient._build_chapter_payload(book_id="7", name="Plan", description=None, description_html=None, tags=None, priority=None),
+            {"book_id": "7", "name": "Plan"},
+        )
+        self.assertEqual(
+            BookStackClient._build_shelf_payload(name="Shelf", description=None, description_html=None, books=None, tags=None),
+            {"name": "Shelf"},
+        )
 
     def test_request_rejects_invalid_json(self):
         response = FakeResponse(200, content=b"not-json", json_error=ValueError("bad json"))

@@ -78,12 +78,23 @@
 - `publish_page`
 - `list_books`
 - `find_books`
+- `get_book`
+- `create_book`
+- `update_book`
 - `list_chapters`
 - `find_chapters`
+- `get_chapter`
+- `create_chapter`
+- `update_chapter`
 - `list_shelves`
 - `find_shelves`
+- `get_shelf`
+- `create_shelf`
+- `update_shelf`
 - `list_pages`
 - `find_pages`
+- `list_tag_names`
+- `list_tag_values`
 
 ### 重要使用说明
 
@@ -91,7 +102,10 @@
 - `search_pages` 仍然是面向页面的搜索工具。
 - `search_content` 是更通用的全局搜索工具，可按支持的内容类型过滤。
 - `find_books`、`find_chapters`、`find_pages` 和 `find_shelves` 是按名称查找的结构化工具，支持 `match=like|exact`。
+- `get_book`、`get_chapter` 和 `get_shelf` 用于按 ID 读取单个资源。
+- `create_book`、`create_chapter`、`create_shelf`、`update_book`、`update_chapter` 和 `update_shelf` 为这些资源补充了不含删除的 CRUD 能力。
 - `list_books`、`list_chapters`、`list_shelves` 和 `list_pages` 是用于定位目标与内容的支持工具。
+- `list_tag_names` 和 `list_tag_values` 仅用于标签发现，不会创建、更新或删除标签。
 - `list_pages` 还支持可选的 `book_id` 和 `chapter_id` 过滤。
 - `export_page_markdown` 用于导出页面 Markdown 内容。
 - 删除或归档操作不属于当前插件范围。
@@ -102,9 +116,9 @@
 1. 将插件导入 Dify。
 2. 配置 `base_url`、`token_id` 和 `token_secret`。
 3. 运行 `validate_credentials`。
-4. 使用 `find_books`、`find_chapters`、`find_shelves` 或各类 list 工具找到可用的目标位置。
-5. 需要检查或导出现有内容时，使用 `search_pages`、`search_content`、`get_page` 或 `export_page_markdown`。
-6. 选好目标后，再使用 `create_page`、`update_page` 或 `publish_page`。
+4. 使用 `find_books`、`find_chapters`、`find_shelves`、`get_book`、`get_chapter`、`get_shelf` 或各类 list 工具找到并检查可用目标。
+5. 需要检查现有内容或发现可用标签时，使用 `search_pages`、`search_content`、`get_page`、`export_page_markdown`、`list_tag_names` 或 `list_tag_values`。
+6. 选好目标后，再使用 `create_book`、`update_book`、`create_chapter`、`update_chapter`、`create_shelf`、`update_shelf`、`create_page`、`update_page` 或 `publish_page`。
 
 按照这个顺序操作，可以保持当前 Tool-first 的主流程：先安装、再连接、先验证、后写入。
 
@@ -189,6 +203,7 @@
 - `Permission denied`
 - `Book not found`
 - `Chapter not found`
+- `Shelf not found`
 - `Page not found`
 - `BookStack API unavailable`
 - `Invalid BookStack response`
@@ -203,7 +218,7 @@
 
 ### 写入工具注意事项
 
-使用 `create_page`、`update_page` 或 `publish_page` 时，在重试前请先确认目标图书、章节或页面标识符。
+使用 `create_book`、`update_book`、`create_chapter`、`update_chapter`、`create_shelf`、`update_shelf`、`create_page`、`update_page` 或 `publish_page` 时，在重试前请先确认目标标识符和预期位置。
 
 ## Datasource 状态
 
@@ -223,7 +238,7 @@
 ## 隐私与打码说明
 
 - 该插件仅连接到用户配置的 BookStack 实例。
-- 该插件会根据你调用的工具读取 BookStack 图书、章节和页面，并可创建或更新 BookStack 页面。
+- 该插件会根据你调用的工具读取 BookStack 图书、章节、书架和页面，并可创建或更新受支持的图书、章节、书架和页面。
 - 该插件使用通过 Dify 插件凭据设置提供的 API 凭据。
 - 除已配置的 BookStack 实例以及执行插件的 Dify 运行时之外，不应将内容发送给其他第三方。
 - 该插件不会记录 `token_secret` 值。
