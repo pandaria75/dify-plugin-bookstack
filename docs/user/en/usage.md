@@ -75,6 +75,8 @@ Recommended first steps after saving credentials:
 - `search_content`
 - `get_page`
 - `export_page_markdown`
+- `export_chapter_markdown`
+- `export_book_markdown`
 - `create_page`
 - `update_page`
 - `publish_page`
@@ -111,9 +113,12 @@ Recommended first steps after saving credentials:
 - `list_tag_names` and `list_tag_values` are discovery-only tag helpers; they do not create, update, or delete tags.
 - `list_pages` also supports optional `book_id` and `chapter_id` filtering.
 - `export_page_markdown` returns page Markdown for export-oriented workflows.
+- `export_chapter_markdown` returns chapter-level aggregate Markdown plus a structured `pages` list with per-page Markdown payloads in chapter order.
+- `export_book_markdown` returns book-level aggregate Markdown plus a structured `pages` list with per-page Markdown payloads in BookStack contents traversal order.
 - `publish_page` supports create-or-update behavior after you choose or confirm the destination with search, find, or list tools.
 - Delete or archive operations are not part of the current plugin scope.
 - Do not describe unlisted or planned tools as available.
+- Planned follow-up evaluation items from issues #45-#48 remain planning-only and are not implemented tools.
 
 ## Recommended First Use Flow
 
@@ -121,7 +126,7 @@ Recommended first steps after saving credentials:
 2. Configure `base_url`, `token_id`, and `token_secret`.
 3. Run `validate_credentials`.
 4. Use `find_books`, `find_chapters`, `find_shelves`, `get_book`, `get_chapter`, `get_shelf`, or the list tools to find and inspect destinations you can work with.
-5. Use `search_pages`, `search_content`, `get_page`, `export_page_markdown`, `list_tag_names`, or `list_tag_values` when you need to inspect existing content or discover tag vocabulary.
+5. Use `search_pages`, `search_content`, `get_page`, `export_page_markdown`, `export_chapter_markdown`, `export_book_markdown`, `list_tag_names`, or `list_tag_values` when you need to inspect existing content or export Markdown.
 6. Use `create_book`, `update_book`, `create_chapter`, `update_chapter`, `create_shelf`, `update_shelf`, `create_page`, `update_page`, or `publish_page` only after choosing the destination.
 
 For destination discovery, prefer `find_*` when you know the name pattern, `list_*` when you want browsable resource lists with optional bounded sort/filter support, `search_pages` for page-only search, and `search_content` for broader cross-type search.

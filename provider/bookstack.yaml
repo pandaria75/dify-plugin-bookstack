@@ -84,6 +84,8 @@ tools:
   - tools/create_chapter.yaml
   - tools/create_shelf.yaml
   - tools/export_page_markdown.yaml
+  - tools/export_chapter_markdown.yaml
+  - tools/export_book_markdown.yaml
   - tools/update_book.yaml
   - tools/update_chapter.yaml
   - tools/update_shelf.yaml

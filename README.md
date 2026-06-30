@@ -11,6 +11,8 @@ Implemented Dify Tool plugin features:
 - `search_content`
 - `get_page`
 - `export_page_markdown`
+- `export_chapter_markdown`
+- `export_book_markdown`
 - `create_page`
 - `update_page`
 - `publish_page`
@@ -40,6 +42,7 @@ Current tool-surface notes:
 - Tag support in this slice is discovery-only via `list_tag_names` and `list_tag_values`.
 - `search_pages` is page-only search.
 - `search_content` is broader global search with optional supported type filtering.
+- `export_page_markdown` exports one page; `export_chapter_markdown` and `export_book_markdown` return both aggregate Markdown and a structured `pages` list for the exported hierarchy.
 - `find_*` tools are structured name lookups; `list_*` tools support destination and content discovery.
 - `list_books`, `list_chapters`, `list_pages`, and `list_shelves` support optional bounded `sort` and JSON `filters`; `list_pages` also keeps optional `book_id` and `chapter_id` filtering.
 - `publish_page` is the writing/publishing path after you choose or confirm the destination with search, find, or list tools.

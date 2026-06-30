@@ -214,6 +214,44 @@ class BookStackClient:
             return payload
         raise _invalid_response()
 
+    def _request_text(
+        self,
+        method: str,
+        path: str,
+        *,
+        not_found_error: type[BookStackError] = BookNotFoundError,
+        not_found_message: str = "Resource not found",
+        **kwargs: Any,
+    ) -> str:
+        try:
+            response = self._session().request(
+                method=method,
+                url=self._api_url(path),
+                timeout=self.timeout_seconds,
+                verify=self.verify_ssl,
+                **kwargs,
+            )
+        except (requests.Timeout, requests.ConnectionError, requests.RequestException) as exc:
+            raise _service_unavailable() from exc
+
+        if response.status_code in {401, 403}:
+            if response.status_code == 401:
+                raise _invalid_credentials()
+            raise PermissionDeniedError("Permission denied")
+        if response.status_code == 404:
+            raise not_found_error(not_found_message)
+        if response.status_code in {400, 422}:
+            raise _invalid_response()
+        if response.status_code == 429 or response.status_code >= 500:
+            raise _service_unavailable()
+        if response.status_code >= 400:
+            raise _service_unavailable()
+
+        if not response.content:
+            return ""
+
+        return response.text
+
     def validate_credentials(self) -> None:
         self._request("GET", "system")
 
@@ -574,6 +612,22 @@ class BookStackClient:
         return self._request(
             "GET",
             f"chapters/{chapter_id}",
+            not_found_error=ChapterNotFoundError,
+            not_found_message="Chapter not found",
+        )
+
+    def export_book_markdown(self, book_id: Any) -> str:
+        return self._request_text(
+            "GET",
+            f"books/{book_id}/export/markdown",
+            not_found_error=BookNotFoundError,
+            not_found_message="Book not found",
+        )
+
+    def export_chapter_markdown(self, chapter_id: Any) -> str:
+        return self._request_text(
+            "GET",
+            f"chapters/{chapter_id}/export/markdown",
             not_found_error=ChapterNotFoundError,
             not_found_message="Chapter not found",
         )

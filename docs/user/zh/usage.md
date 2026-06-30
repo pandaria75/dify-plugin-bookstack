@@ -73,6 +73,8 @@
 - `search_content`
 - `get_page`
 - `export_page_markdown`
+- `export_chapter_markdown`
+- `export_book_markdown`
 - `create_page`
 - `update_page`
 - `publish_page`
@@ -109,9 +111,12 @@
 - `list_tag_names` 和 `list_tag_values` 仅用于标签发现，不会创建、更新或删除标签。
 - `list_pages` 还支持可选的 `book_id` 和 `chapter_id` 过滤。
 - `export_page_markdown` 用于导出页面 Markdown 内容。
+- `export_chapter_markdown` 用于导出章节级聚合 Markdown，同时返回按章节页面顺序排列的结构化 `pages` 列表，每项包含页面级 Markdown 结果。
+- `export_book_markdown` 用于导出图书级聚合 Markdown，同时返回按 BookStack `contents` 遍历顺序排列的结构化 `pages` 列表，每项包含页面级 Markdown 结果。
 - `publish_page` 支持 create-or-update 行为，适合在通过 search、find 或 list 工具确认目标后再执行写入。
 - 删除或归档操作不属于当前插件范围。
 - 不要将未列出或仍在计划中的工具描述为已可用。
+- #45-#48 对应的附件、评论/审计、回收站/删除、权限能力目前仍仅处于评估规划阶段，不是已实现工具。
 
 ## 推荐的首次使用流程
 
@@ -119,7 +124,7 @@
 2. 配置 `base_url`、`token_id` 和 `token_secret`。
 3. 运行 `validate_credentials`。
 4. 使用 `find_books`、`find_chapters`、`find_shelves`、`get_book`、`get_chapter`、`get_shelf` 或各类 list 工具找到并检查可用目标。
-5. 需要检查现有内容或发现可用标签时，使用 `search_pages`、`search_content`、`get_page`、`export_page_markdown`、`list_tag_names` 或 `list_tag_values`。
+5. 需要检查现有内容、导出 Markdown 或发现可用标签时，使用 `search_pages`、`search_content`、`get_page`、`export_page_markdown`、`export_chapter_markdown`、`export_book_markdown`、`list_tag_names` 或 `list_tag_values`。
 6. 选好目标后，再使用 `create_book`、`update_book`、`create_chapter`、`update_chapter`、`create_shelf`、`update_shelf`、`create_page`、`update_page` 或 `publish_page`。
 
 在定位目标时：已知名称模式时优先用 `find_*`，需要浏览资源列表时用支持受限排序/过滤的 `list_*`，仅搜索页面时用 `search_pages`，需要更广泛跨类型搜索时用 `search_content`。
