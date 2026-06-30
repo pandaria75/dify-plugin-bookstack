@@ -31,10 +31,12 @@ class ListShelvesTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         count = tool_parameters.get("count")
         offset = tool_parameters.get("offset")
+        sort = tool_parameters.get("sort")
+        filters = tool_parameters.get("filters")
 
         try:
             client = BookStackClient.from_credentials(self.runtime.credentials)
-            payload = client.list_shelves(count=count, offset=offset)
+            payload = client.list_shelves(count=count, offset=offset, sort=sort, filters=filters)
         except BookStackError as exc:
             yield from emit_variable_messages(self, collection_error("shelves", str(exc), include_total=True))
             return

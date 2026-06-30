@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import re
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urljoin
@@ -43,6 +45,10 @@ class InvalidResponseError(BookStackError):
     pass
 
 
+class InvalidQueryError(BookStackError):
+    pass
+
+
 def _invalid_credentials() -> InvalidCredentialsError:
     return InvalidCredentialsError("Invalid credentials")
 
@@ -60,6 +66,30 @@ def normalize_find_match(value: Any) -> str:
     if match not in {"exact", "like"}:
         raise ValueError("match must be one of: exact, like")
     return match
+
+
+LIST_SORT_FIELDS: dict[str, frozenset[str]] = {
+    "books": frozenset({"name", "created_at", "updated_at"}),
+    "chapters": frozenset({"name", "created_at", "updated_at", "priority"}),
+    "pages": frozenset({"name", "created_at", "updated_at", "priority"}),
+    "shelves": frozenset({"name", "created_at", "updated_at"}),
+}
+
+LIST_SHARED_FILTER_FIELDS = frozenset({"name", "created_at", "updated_at"})
+LIST_RESOURCE_FILTER_FIELDS: dict[str, frozenset[str]] = {
+    "books": LIST_SHARED_FILTER_FIELDS,
+    "chapters": LIST_SHARED_FILTER_FIELDS | frozenset({"book_id"}),
+    "pages": LIST_SHARED_FILTER_FIELDS | frozenset({"book_id", "chapter_id"}),
+    "shelves": LIST_SHARED_FILTER_FIELDS,
+}
+LIST_SCOPE_FIELDS: dict[str, tuple[str, ...]] = {
+    "books": (),
+    "chapters": ("book_id",),
+    "pages": ("book_id", "chapter_id"),
+    "shelves": (),
+}
+LIST_FILTER_OPERATORS = frozenset({"eq", "like"})
+LIST_FIELD_PATTERN = re.compile(r"^[a-z_][a-z0-9_]*$")
 
 
 @dataclass(slots=True)
@@ -216,6 +246,110 @@ class BookStackClient:
 
         return BookStackClient._build_list_params(**{filter_key: filter_value}, **params)
 
+    @staticmethod
+    def _normalize_list_sort(resource: str, sort: Any | None) -> str | None:
+        if sort is None:
+            return None
+
+        sort_text = str(sort).strip()
+        if not sort_text:
+            return None
+
+        direction = ""
+        field = sort_text
+        if sort_text[0] in {"+", "-"}:
+            direction = sort_text[0]
+            field = sort_text[1:]
+
+        if not field or not LIST_FIELD_PATTERN.fullmatch(field):
+            raise InvalidQueryError("sort must use +field, -field, or field format")
+        if field not in LIST_SORT_FIELDS[resource]:
+            raise InvalidQueryError(f"unsupported sort field: {field}")
+
+        return f"-{field}" if direction == "-" else field
+
+    @staticmethod
+    def _parse_list_filters(resource: str, filters: Any | None, legacy_scope: dict[str, Any]) -> dict[str, Any]:
+        if filters is None:
+            return {}
+
+        filters_text = str(filters).strip()
+        if not filters_text:
+            return {}
+
+        try:
+            parsed = json.loads(filters_text)
+        except (TypeError, ValueError) as exc:
+            raise InvalidQueryError("filters must be a valid JSON object string") from exc
+
+        if not isinstance(parsed, dict):
+            raise InvalidQueryError("filters must be a valid JSON object string")
+
+        allowed_fields = LIST_RESOURCE_FILTER_FIELDS[resource]
+        filter_params: dict[str, Any] = {}
+
+        for raw_key, value in parsed.items():
+            if not isinstance(raw_key, str):
+                raise InvalidQueryError("filters keys must use field:operator format")
+            if raw_key.startswith("filter["):
+                raise InvalidQueryError("raw filter keys are not allowed")
+            if raw_key.count(":") != 1:
+                raise InvalidQueryError("filters keys must use field:operator format")
+
+            field, operator = raw_key.split(":", 1)
+            if not field or not operator:
+                raise InvalidQueryError("filters keys must use field:operator format")
+            if field not in allowed_fields:
+                raise InvalidQueryError(f"unsupported filter field: {field}")
+            if operator not in LIST_FILTER_OPERATORS:
+                raise InvalidQueryError(f"unsupported filter operator: {operator}")
+
+            if value is None:
+                raise InvalidQueryError("filters values cannot be null")
+            if isinstance(value, list):
+                raise InvalidQueryError("filters values cannot be lists")
+            if isinstance(value, dict):
+                raise InvalidQueryError("filters values cannot be objects")
+            if not isinstance(value, (str, int, float, bool)):
+                raise InvalidQueryError("filters values must be string, number, or boolean")
+
+            legacy_value = legacy_scope.get(field)
+            if legacy_value is not None:
+                if operator != "eq" or legacy_value != value:
+                    raise InvalidQueryError(f"filters conflict with legacy {field}")
+                continue
+
+            filter_params[f"filter[{field}:{operator}]"] = value
+
+        return filter_params
+
+    @classmethod
+    def _build_list_query_params(
+        cls,
+        resource: str,
+        *,
+        sort: Any | None = None,
+        filters: Any | None = None,
+        legacy_scope: dict[str, Any] | None = None,
+        **params: Any,
+    ) -> dict[str, Any]:
+        legacy_scope = legacy_scope or {}
+
+        query_params = cls._build_list_params(**params)
+
+        normalized_sort = cls._normalize_list_sort(resource, sort)
+        if normalized_sort is not None:
+            query_params["sort"] = normalized_sort
+
+        query_params.update(cls._parse_list_filters(resource, filters, legacy_scope))
+
+        for field in LIST_SCOPE_FIELDS[resource]:
+            value = legacy_scope.get(field)
+            if value is not None:
+                query_params[f"filter[{field}:eq]"] = value
+
+        return query_params
+
     def _list_endpoint(
         self,
         path: str,
@@ -279,11 +413,29 @@ class BookStackClient:
 
         return page_results
 
-    def list_books(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
-        return self._list_endpoint("books", count=count, offset=offset)
+    def list_books(
+        self,
+        count: Any | None = None,
+        offset: Any | None = None,
+        sort: Any | None = None,
+        filters: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._list_endpoint(
+            "books",
+            **self._build_list_query_params("books", count=count, offset=offset, sort=sort, filters=filters),
+        )
 
-    def list_shelves(self, count: Any | None = None, offset: Any | None = None) -> dict[str, Any]:
-        return self._list_endpoint("shelves", count=count, offset=offset)
+    def list_shelves(
+        self,
+        count: Any | None = None,
+        offset: Any | None = None,
+        sort: Any | None = None,
+        filters: Any | None = None,
+    ) -> dict[str, Any]:
+        return self._list_endpoint(
+            "shelves",
+            **self._build_list_query_params("shelves", count=count, offset=offset, sort=sort, filters=filters),
+        )
 
     def find_books(
         self,
@@ -365,43 +517,40 @@ class BookStackClient:
         chapter_id: Any | None = None,
         count: Any | None = None,
         offset: Any | None = None,
+        sort: Any | None = None,
+        filters: Any | None = None,
     ) -> dict[str, Any]:
-        params: dict[str, Any] = {}
-        if book_id is not None:
-            params["filter[book_id:eq]"] = book_id
-        if chapter_id is not None:
-            params["filter[chapter_id:eq]"] = chapter_id
-        if count is not None:
-            params["count"] = count
-        if offset is not None:
-            params["offset"] = offset
-
-        request_kwargs: dict[str, Any] = {}
-        if params:
-            request_kwargs["params"] = params
-
-        payload = self._request("GET", "pages", **request_kwargs)
-        data = payload.get("data")
-
-        if not isinstance(data, list):
-            raise InvalidResponseError("Invalid BookStack response")
-
-        return payload
+        return self._list_endpoint(
+            "pages",
+            **self._build_list_query_params(
+                "pages",
+                count=count,
+                offset=offset,
+                sort=sort,
+                filters=filters,
+                legacy_scope={"book_id": book_id, "chapter_id": chapter_id},
+            ),
+        )
 
     def list_chapters(
         self,
         book_id: Any | None = None,
         count: Any | None = None,
         offset: Any | None = None,
+        sort: Any | None = None,
+        filters: Any | None = None,
     ) -> dict[str, Any]:
         return self._list_endpoint(
             "chapters",
             not_found_error=BookNotFoundError,
             not_found_message="Book not found",
-            **self._build_list_params(
-                **{"filter[book_id:eq]": book_id},
+            **self._build_list_query_params(
+                "chapters",
                 count=count,
                 offset=offset,
+                sort=sort,
+                filters=filters,
+                legacy_scope={"book_id": book_id},
             ),
         )
 

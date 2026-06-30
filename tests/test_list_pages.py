@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 from bookstack_client import BookStackClient, InvalidResponseError
@@ -39,7 +40,14 @@ class ListPagesClientTestCase(unittest.TestCase):
         client = BookStackClient("https://example.test", "id", "secret")
 
         with patch.object(BookStackClient, "_request", return_value={"data": [], "total": 0}) as request:
-            result = client.list_pages(book_id="7", chapter_id="11", count=25, offset=50)
+            result = client.list_pages(
+                book_id="7",
+                chapter_id="11",
+                count=25,
+                offset=50,
+                sort="-priority",
+                filters='{"name:like":"%Guide%"}',
+            )
 
         request.assert_called_once_with(
             "GET",
@@ -49,6 +57,8 @@ class ListPagesClientTestCase(unittest.TestCase):
                 "filter[chapter_id:eq]": "11",
                 "count": 25,
                 "offset": 50,
+                "sort": "-priority",
+                "filter[name:like]": "%Guide%",
             },
         )
         self.assertEqual(result, {"data": [], "total": 0})
@@ -97,9 +107,23 @@ class ListPagesToolTests(unittest.TestCase):
         client.list_pages.return_value = {"data": [{"id": 13, "name": "Incident Guide"}], "total": 1}
         from_credentials.return_value = client
 
-        result = self._invoke(book_id="7", chapter_id="11", count=25, offset=50)
+        result = self._invoke(
+            book_id="7",
+            chapter_id="11",
+            count=25,
+            offset=50,
+            sort="-priority",
+            filters='{"name:like":"%Guide%"}',
+        )
 
-        client.list_pages.assert_called_once_with(book_id="7", chapter_id="11", count=25, offset=50)
+        client.list_pages.assert_called_once_with(
+            book_id="7",
+            chapter_id="11",
+            count=25,
+            offset=50,
+            sort="-priority",
+            filters='{"name:like":"%Guide%"}',
+        )
         self.assertEqual(result["success"], True)
         self.assertEqual(result["count"], 1)
         self.assertEqual(result["total"], 1)
@@ -113,8 +137,24 @@ class ListPagesToolTests(unittest.TestCase):
 
         result = self._invoke()
 
-        client.list_pages.assert_called_once_with(book_id=None, chapter_id=None, count=None, offset=None)
+        client.list_pages.assert_called_once_with(book_id=None, chapter_id=None, count=None, offset=None, sort=None, filters=None)
         self.assertEqual(result, {"success": True, "error": None, "pages": [], "count": 0, "total": None})
+
+
+class ListPagesYamlContractTestCase(unittest.TestCase):
+    def test_yaml_keeps_existing_params_and_adds_sort_and_filters(self):
+        content = Path("tools/list_pages.yaml").read_text(encoding="utf-8")
+
+        for required_snippet in (
+            "- name: book_id",
+            "- name: chapter_id",
+            "- name: count",
+            "- name: offset",
+            "- name: sort",
+            "- name: filters",
+        ):
+            with self.subTest(snippet=required_snippet):
+                self.assertIn(required_snippet, content)
 
 
 if __name__ == "__main__":

@@ -98,16 +98,18 @@
 
 ### 重要使用说明
 
-- `publish_page` 支持 create-or-update 行为。
+- 该插件在 Dify 中提供的是 BookStack 基础能力；更高层的业务编排与组合应由你自己的工作流或适配层负责。
 - `search_pages` 仍然是面向页面的搜索工具。
 - `search_content` 是更通用的全局搜索工具，可按支持的内容类型过滤。
 - `find_books`、`find_chapters`、`find_pages` 和 `find_shelves` 是按名称查找的结构化工具，支持 `match=like|exact`。
 - `get_book`、`get_chapter` 和 `get_shelf` 用于按 ID 读取单个资源。
 - `create_book`、`create_chapter`、`create_shelf`、`update_book`、`update_chapter` 和 `update_shelf` 为这些资源补充了不含删除的 CRUD 能力。
 - `list_books`、`list_chapters`、`list_shelves` 和 `list_pages` 是用于定位目标与内容的支持工具。
+- 上述四个 `list_*` 工具还支持可选且受限的 `sort`（`+field`、`-field` 或 `field`）与 JSON `filters`，其中字段范围与 `eq` / `like` 运算符均受资源类型约束。
 - `list_tag_names` 和 `list_tag_values` 仅用于标签发现，不会创建、更新或删除标签。
 - `list_pages` 还支持可选的 `book_id` 和 `chapter_id` 过滤。
 - `export_page_markdown` 用于导出页面 Markdown 内容。
+- `publish_page` 支持 create-or-update 行为，适合在通过 search、find 或 list 工具确认目标后再执行写入。
 - 删除或归档操作不属于当前插件范围。
 - 不要将未列出或仍在计划中的工具描述为已可用。
 
@@ -119,6 +121,8 @@
 4. 使用 `find_books`、`find_chapters`、`find_shelves`、`get_book`、`get_chapter`、`get_shelf` 或各类 list 工具找到并检查可用目标。
 5. 需要检查现有内容或发现可用标签时，使用 `search_pages`、`search_content`、`get_page`、`export_page_markdown`、`list_tag_names` 或 `list_tag_values`。
 6. 选好目标后，再使用 `create_book`、`update_book`、`create_chapter`、`update_chapter`、`create_shelf`、`update_shelf`、`create_page`、`update_page` 或 `publish_page`。
+
+在定位目标时：已知名称模式时优先用 `find_*`，需要浏览资源列表时用支持受限排序/过滤的 `list_*`，仅搜索页面时用 `search_pages`，需要更广泛跨类型搜索时用 `search_content`。
 
 按照这个顺序操作，可以保持当前 Tool-first 的主流程：先安装、再连接、先验证、后写入。
 

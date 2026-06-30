@@ -33,10 +33,12 @@ class ListChaptersTool(Tool):
         book_id = tool_parameters.get("book_id")
         count = tool_parameters.get("count")
         offset = tool_parameters.get("offset")
+        sort = tool_parameters.get("sort")
+        filters = tool_parameters.get("filters")
 
         try:
             client = BookStackClient.from_credentials(self.runtime.credentials)
-            payload = client.list_chapters(book_id=book_id, count=count, offset=offset)
+            payload = client.list_chapters(book_id=book_id, count=count, offset=offset, sort=sort, filters=filters)
         except BookStackError as exc:
             yield from emit_variable_messages(self, collection_error("chapters", str(exc), include_total=True))
             return

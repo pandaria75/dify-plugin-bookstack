@@ -10,6 +10,7 @@ from bookstack_client import (
     BookStackClient,
     ChapterNotFoundError,
     InvalidCredentialsError,
+    InvalidQueryError,
     InvalidResponseError,
     PageNotFoundError,
     PermissionDeniedError,
@@ -199,6 +200,109 @@ class BookStackClientTestCase(unittest.TestCase):
                 "offset": 200,
             },
         )
+
+    def test_list_methods_preserve_existing_behavior_without_sort_or_filters(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        cases = [
+            (client.list_books, {}, ("GET", "books"), {}),
+            (client.list_shelves, {}, ("GET", "shelves"), {}),
+            (
+                client.list_chapters,
+                {"book_id": "7", "count": 25, "offset": 50},
+                ("GET", "chapters"),
+                {
+                    "not_found_error": BookNotFoundError,
+                    "not_found_message": "Book not found",
+                    "params": {"filter[book_id:eq]": "7", "count": 25, "offset": 50},
+                },
+            ),
+            (
+                client.list_pages,
+                {"book_id": "7", "chapter_id": "11", "count": 25, "offset": 50},
+                ("GET", "pages"),
+                {
+                    "params": {
+                        "filter[book_id:eq]": "7",
+                        "filter[chapter_id:eq]": "11",
+                        "count": 25,
+                        "offset": 50,
+                    }
+                },
+            ),
+        ]
+
+        for method, kwargs, call_args, extra_kwargs in cases:
+            with self.subTest(method=method.__name__):
+                with patch.object(BookStackClient, "_request", return_value={"data": []}) as request:
+                    result = method(**kwargs)
+
+                request.assert_called_once_with(*call_args, **extra_kwargs)
+                self.assertEqual(result, {"data": []})
+
+    def test_list_sort_normalizes_plus_minus_and_bare_field(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        cases = [
+            (client.list_books, {"sort": "+name"}, {"sort": "name"}),
+            (client.list_chapters, {"sort": "-priority"}, {"sort": "-priority"}),
+            (client.list_pages, {"sort": "updated_at"}, {"sort": "updated_at"}),
+        ]
+
+        for method, kwargs, expected_params in cases:
+            with self.subTest(method=method.__name__, sort=kwargs["sort"]):
+                with patch.object(BookStackClient, "_request", return_value={"data": []}) as request:
+                    method(**kwargs)
+
+                self.assertEqual(request.call_args.kwargs["params"], expected_params)
+
+    def test_list_filters_map_to_bookstack_filter_query_params(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(BookStackClient, "_request", return_value={"data": []}) as request:
+            client.list_pages(filters='{"name:like":"%Guide%","updated_at:eq":"2026-06-18T00:00:00Z"}')
+
+        request.assert_called_once_with(
+            "GET",
+            "pages",
+            params={
+                "filter[name:like]": "%Guide%",
+                "filter[updated_at:eq]": "2026-06-18T00:00:00Z",
+            },
+        )
+
+    def test_list_filters_allow_legacy_scope_when_equal(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        with patch.object(BookStackClient, "_request", return_value={"data": []}) as request:
+            client.list_pages(book_id="7", filters='{"book_id:eq":"7"}')
+
+        request.assert_called_once_with("GET", "pages", params={"filter[book_id:eq]": "7"})
+
+    def test_list_filters_reject_invalid_inputs_before_request_dispatch(self):
+        client = BookStackClient("https://example.test", "id", "secret")
+
+        cases = [
+            (client.list_books, {"filters": "{"}, "filters must be a valid JSON object string"),
+            (client.list_books, {"filters": '["bad"]'}, "filters must be a valid JSON object string"),
+            (client.list_books, {"filters": '{"priority:eq":1}'}, "unsupported filter field: priority"),
+            (client.list_books, {"filters": '{"name:gt":"Ops"}'}, "unsupported filter operator: gt"),
+            (client.list_books, {"filters": '{"filter[name:eq]":"Ops"}'}, "raw filter keys are not allowed"),
+            (client.list_books, {"filters": '{"name":"Ops"}'}, "filters keys must use field:operator format"),
+            (client.list_books, {"filters": '{"name:eq":["Ops"]}'}, "filters values cannot be lists"),
+            (client.list_books, {"filters": '{"name:eq":{"value":"Ops"}}'}, "filters values cannot be objects"),
+            (client.list_books, {"filters": '{"name:eq":null}'}, "filters values cannot be null"),
+            (client.list_pages, {"book_id": "7", "filters": '{"book_id:eq":"8"}'}, "filters conflict with legacy book_id"),
+            (client.list_books, {"sort": "priority"}, "unsupported sort field: priority"),
+            (client.list_books, {"sort": "name desc"}, r"sort must use \+field, -field, or field format"),
+        ]
+
+        for method, kwargs, message in cases:
+            with self.subTest(method=method.__name__, kwargs=kwargs):
+                with patch.object(BookStackClient, "_request") as request:
+                    with self.assertRaisesRegex(InvalidQueryError, message):
+                        method(**kwargs)
+                request.assert_not_called()
 
     def test_list_pages_omits_filter_params_when_filters_not_provided(self):
         response = FakeResponse(200, content=b'{"data": []}', json_value={"data": []})

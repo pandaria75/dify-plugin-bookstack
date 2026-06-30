@@ -100,16 +100,18 @@ Recommended first steps after saving credentials:
 
 ### Important usage notes
 
-- `publish_page` supports create-or-update behavior.
+- The plugin provides BookStack foundation capabilities inside Dify; workflow-specific business composition belongs to your own workflow or adapter layer.
 - `search_pages` remains the page-focused search tool.
 - `search_content` is the broader global search tool and can filter across supported content types.
 - `find_books`, `find_chapters`, `find_pages`, and `find_shelves` are structured name-based lookup tools with `match=like|exact`.
 - `get_book`, `get_chapter`, and `get_shelf` read one resource by ID.
 - `create_book`, `create_chapter`, `create_shelf`, `update_book`, `update_chapter`, and `update_shelf` add non-delete CRUD coverage for those resources.
 - `list_books`, `list_chapters`, `list_shelves`, and `list_pages` are support tools for locating destinations and content.
+- Those four `list_*` tools also support optional bounded `sort` (`+field`, `-field`, or `field`) and JSON `filters` using approved resource-specific fields and `eq` / `like` operators.
 - `list_tag_names` and `list_tag_values` are discovery-only tag helpers; they do not create, update, or delete tags.
 - `list_pages` also supports optional `book_id` and `chapter_id` filtering.
 - `export_page_markdown` returns page Markdown for export-oriented workflows.
+- `publish_page` supports create-or-update behavior after you choose or confirm the destination with search, find, or list tools.
 - Delete or archive operations are not part of the current plugin scope.
 - Do not describe unlisted or planned tools as available.
 
@@ -121,6 +123,8 @@ Recommended first steps after saving credentials:
 4. Use `find_books`, `find_chapters`, `find_shelves`, `get_book`, `get_chapter`, `get_shelf`, or the list tools to find and inspect destinations you can work with.
 5. Use `search_pages`, `search_content`, `get_page`, `export_page_markdown`, `list_tag_names`, or `list_tag_values` when you need to inspect existing content or discover tag vocabulary.
 6. Use `create_book`, `update_book`, `create_chapter`, `update_chapter`, `create_shelf`, `update_shelf`, `create_page`, `update_page`, or `publish_page` only after choosing the destination.
+
+For destination discovery, prefer `find_*` when you know the name pattern, `list_*` when you want browsable resource lists with optional bounded sort/filter support, `search_pages` for page-only search, and `search_content` for broader cross-type search.
 
 This order keeps the current Tool-first workflow simple: install, connect, validate, inspect targets, then write content.
 
